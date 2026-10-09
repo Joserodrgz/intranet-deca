@@ -8,7 +8,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/informix/datos_y_funciones_pdf.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
-$codep = new phpsecureurl;
+$codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
   $url2 = $codep->decode($url2);
@@ -234,42 +234,41 @@ $pdf->addLineFormat($cols);
 
 $y = 113;
 
-// Líneas agrupadas por familia, marca y envase
 if (trim($fecha != '')) {
   $consulta = "
     SELECT DISTINCT
-      des_famili,
-      mar_hliven[1,4] AS marc_lin,
+      art_hliven AS cod_art,
+      mar_hliven AS marc_lin,
+      bul_hliven AS bult_lin,
+      bru_hliven AS brut_lin,
       env_hliven AS enva_lin,
-      SUM(bul_hliven) AS bult_lin,
-      SUM(bru_hliven) AS brut_lin
-    FROM ffhliven, ffarticu, fffamili
+      num_hliven AS nume_lin,
+      des_art
+    FROM ffhliven, ffarticu
     WHERE TRIM(emp_hliven) = '$empr'
       AND cli_hliven = '$cliente'
       AND fec_hliven = '$fechafinal'
       AND alb_hliven = $numero
       AND ind_hliven = '$estado'
       AND cod_art = art_hliven
-      AND fam_art = cod_famili
-    GROUP BY 1, 2, 3
-    ORDER BY 1
+    ORDER BY num_hliven
   ";
 } else {
   $consulta = "
     SELECT
-      des_famili,
-      marc_lin[1,4] AS marc_lin,
-      enva_lin,
-      SUM(bult_lin) AS bult_lin,
-      SUM(brut_lin) AS brut_lin
-    FROM ffarticu, fflineas, fffamili
+      des_art,
+      nume_lin,
+      cod_art,
+      marc_lin,
+      bult_lin,
+      brut_lin,
+      enva_lin
+    FROM ffarticu, fflineas
     WHERE empr_lin = '$empr'
       AND alba_lin = $numero
       AND indi_lin = '$estado'
       AND cod_art = arti_lin
-      AND fam_art = cod_famili
-    GROUP BY 1, 2, 3
-    ORDER BY 1
+    ORDER BY nume_lin
   ";
 }
 
@@ -301,13 +300,13 @@ while ((odbc_fetch_row($resultado)) && ($lineas < 30)) {
   $bruto += $brut_lin;
   $bult_lin = number_format($bult_lin, 0);
   $brut_lin = number_format($brut_lin, 2, ",", ".");
-  $des_famili = limpiar(odbc_result($resultado, "des_famili"));
+  $des_art = limpiar(odbc_result($resultado, "des_art"));
 
   $line = array(
     "Marcas"           => "$des_marca",
     "Bultos"           => "$bult_lin",
     "Envase"           => "$des_env",
-    "Mercancia"        => "$des_famili",
+    "Mercancia"        => "$des_art",
     "Peso bruto en kg" => "$brut_lin",
     "Volumen en m3"    => " "
   );
