@@ -178,13 +178,13 @@ if (!$dest2_satalbtte) {
 $a = 1;
 
 if (($estado == 'R') || ($estado == 'C')) {
-  echo "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png width='24' height='16' class='middle'> 
-    &nbsp;de la factura $numero del almacén $empr de $nom_cli &nbsp;&nbsp;</legend>";	
+  echo iconv("UTF-8", "ISO-8859-1", "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png width='24' height='16' class='middle'> 
+    &nbsp;de la factura $numero del almacén $empr de ") . $nom_cli . " &nbsp;&nbsp;</legend>";	
 }
 
 if ($estado == 'A') {
-  echo "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png  width='24' height='16' class='middle'>
-    &nbsp;del albarán $numero de $nom_cli &nbsp;&nbsp;</legend>";
+  echo iconv("UTF-8", "ISO-8859-1", "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png  width='24' height='16' class='middle'>
+    &nbsp;del albarán $numero de ") . $nom_cli . " &nbsp;&nbsp;</legend>";
 }
 
 $url_cmr = sprintf("../../fpdf/cmr.php");
@@ -228,7 +228,7 @@ echo "<td align=left><input STYLE='text-align:left' type='text' name='chofer_nif
 	onkeyup='this.value=this.value.toUpperCase()'
 	></div></tr><tr class=amarillo>";
 
-echo "<td align=left><div id=tit2>Matrículas";
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left><div id=tit2>Matrículas");
 echo "<td align=left><input STYLE='text-align:left' type='text' name='matricula' id='matricula_id'
 	size='25' maxlength='20' value='$mat_satalbtte ' tabindex='4'
 	onkeyup='this.value=this.value.toUpperCase()'
@@ -251,7 +251,7 @@ if (!$pai_satalbtte) {
   $pai_satalbtte = $ro_pai_cli;
 }
 
-echo "<td align=left><div id=tit2>País destino";
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left><div id=tit2>País destino");
 echo "<td align=left width=10%><input STYLE='text-align:left' type='text' name='paisdestino' id='paisText'
 	size='6' maxlength='5' value='$pai_satalbtte' tabindex='5' readonly
 	onkeyup='this.value=this.value.toUpperCase()'
@@ -285,9 +285,9 @@ echo "</div></td>";
 echo "</tr><tr class=amarillo>";
 
 // Instrucciones
-echo "<td align=left colspan=2><div id=tit3>
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left colspan=2><div id=tit3>
 	Instrucciones al porteador, siendo la más común entrega de
-	documentos contra pago (pagaré de importe)";
+	documentos contra pago (pagaré de importe)");
 echo "</div></td></tr><tr class=amarillo>";
 echo "<td align=left><div id=tit2>05 Instrucciones del expedidor";
 echo "<td align=left><input STYLE='text-align:left' type='text' name='instr_5' id='instr_5_id'
@@ -304,9 +304,9 @@ echo "<td align=left><input STYLE='text-align:left' type='text' name='instr_16' 
 	onkeyup='this.value=this.value.toUpperCase()'
 	></div></tr><tr class=amarillo>";
 
-echo "<td align=left colspan=2><div id=tit3>
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left colspan=2><div id=tit3>
 	Estipulaciones particulares sobre la mercancía,
-	por ejemplo, la velocidad para no dañarla o el <b>número de precinto</b>.";
+	por ejemplo, la velocidad para no dañarla o el <b>número de precinto</b>.");
 echo "</div></td></tr><tr class=amarillo>";
 echo "<td align=left><div id=tit2>18 Estipulaciones particulares";
 echo "<td align=left><input STYLE='text-align:left' type='text' name='instr_18' id='instr_18_id'
@@ -318,7 +318,7 @@ echo "</table>";
 // Buscador de cuentas
 echo "<TABLE align=center width=50 class=acceso id='buscardor_cta' STYLE='display:none';>";
 echo "<tr class=azul>";
-echo "<td align=left><div id=tit2>Buscar cuenta por descripción</div></td></tr><tr>";
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left><div id=tit2>Buscar cuenta por descripción</div></td></tr><tr>");
 echo "<td align=left> <input type=text name=busc_cta id='busc_cta' size='50' maxlength='35' value=''
 	onKeyUp='buscar_cuenta()'></td></tr><tr>";
 echo "<td align=left width=50>
@@ -329,7 +329,7 @@ echo "</tr></table>";
 // Buscador de países
 echo "<TABLE align=center width=50 class=acceso id='buscador_pais' STYLE='display:none';>";
 echo "<tr class=azul>";
-echo "<td align=left><div id=tit2>Buscar país destino por nombre</div></td></tr><tr>";
+echo iconv("UTF-8", "ISO-8859-1", "<td align=left><div id=tit2>Buscar país destino por nombre</div></td></tr><tr>");
 echo "<td align=left> <input type=text name=busc_pais id='busc_pais' size='50' maxlength='35' value=''
 	onKeyUp='buscar_pais()'></td></tr><tr>";
 echo "<td align=left width=50>

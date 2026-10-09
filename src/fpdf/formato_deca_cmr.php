@@ -184,13 +184,13 @@ function titulo($factura, $pagina)
     $this->Cell(20,4, "Copia para devolver firmada al remitente o expedidor", 0, 0, "L");
     $this->SetXY( 7, 7.5 );
     if ($pagina == 1)
-    $this->Cell(20,4, "Exemplaire de l'expéditeur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Exemplaire de l'expéditeur"), 0, 0, "L");
     if ($pagina == 2)
     $this->Cell(20,4, "Exemplaire du destinataire", 0, 0, "L");
     if ($pagina == 3)
     $this->Cell(20,4, "Exemplaire du transporteur", 0, 0, "L");
     if ($pagina == 4)
-    $this->Cell(20,4, "Signé copie à l'expéditeur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Signé copie à l'expéditeur"), 0, 0, "L");
     $this->SetXY( 58 , $y1 );
     $this->SetFont( "Arial", "B", 5);
     $this->Cell(20,4, "CARTA DE PORTE INTERNACIONAL", 0, 0, "L");
@@ -205,7 +205,7 @@ function titulo($factura, $pagina)
     $this->Cell(20,4, "ES", 0, 0, "L");
     $this->SetXY( 160 , 4 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "España", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1","España"), 0, 0, "L");
     $this->SetXY( 160 , 6 );
     $this->SetFont( "Helvetica", "", 5);
     $this->Cell(20,4, "Espagne", 0, 0, "L");
@@ -218,7 +218,7 @@ function titulo_deca($factura)
     $this->SetTextColor(0,0,80);
     $this->SetXY(4,5);
     $this->SetFont( "Arial", "B", 5);
-    $this->Cell(20,4, "Documento de control electrónico conforme a la Orden FOM/2861/2012 y la Resolución de 5 de junio de 2026", 0, 0, "L");	
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Documento de control electrónico conforme a la Orden FOM/2861/2012 y la Resolución de 5 de junio de 2026"), 0, 0, "L");	
     $this->SetXY(115,4);
     $this->SetFont( "Arial", "B", 5);
     $this->Cell(20,4, "CARTA DE PORTE", 0, 0, "L");
@@ -227,13 +227,13 @@ function titulo_deca($factura)
     $this->Cell(30,4, "DeCA", 0, 0, "C");
     $this->SetXY(115,5);
     $this->SetFont( "Arial", "B", 5);
-    $this->Cell(20,8, "Documento de control electrónico", 0, 0, "L");
+    $this->Cell(20,8, iconv("UTF-8", "ISO-8859-1","Documento de control electrónico"), 0, 0, "L");
     $this->SetXY(150,5);
     $this->SetFont( "Helvetica", "B", 14);
     $this->Cell(20,4, "ES", 0, 0, "L");
     $this->SetXY( 160 , 6 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "España", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1","España"), 0, 0, "L");
     $this->SetXY( 185 , 5 );
     $this->SetFont( "Helvetica", "B", 12);
     $this->Cell(20,4, "$factura", 0, 0, "R");
@@ -306,7 +306,7 @@ function addSociete( $nom, $adresse )
     $this->Cell(20,4, "Remitente/Expedidor", 0, 0, "L");
     $this->SetXY( 10 , 16.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Expéditeur (nom, adresse, pays)", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Expéditeur (nom, adresse, pays)"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $x1 = 12;
     $y1 = 22;
@@ -371,7 +371,7 @@ function marco_rojo_6($pagina, $matricula)
     $this->Cell(20,4, "Transportista", 0, 0, "L");
     $this->SetXY( 116 , 16.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Transporteur (nom, adresse, pays, autres références)", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Transporteur (nom, adresse, pays, autres références)"), 0, 0, "L");
     $this->SetXY( 147.5 , 35.21 );
     $this->SetFont( "Helvetica", "", 8);
     $this->Cell(10,4, "MATRICULA:", 0, 0, "L");
@@ -468,10 +468,10 @@ function marco_rojo_7($pagina)
     $this->Cell(20,4, "8", 0, 0, "L");
     $this->SetXY( 116 , 65 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Reservas y observaciones del transportista sobre la mercancía", 0, 0, "L");
+    $this->Cell(20, 4, iconv("UTF-8", "ISO-8859-1", "Reservas y observaciones del transportista sobre la mercancía"), 0, 0, "L");
     $this->SetXY( 116 , 66.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Réserves et observations du transporteur lors de la prise en charge de la marchandise", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Réserves et observations du transporteur lors de la prise en charge de la marchandise"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
 }
 function marco_deca_7()
@@ -490,7 +490,7 @@ function marco_deca_7()
     $this->Cell(20,4, "Transportistas sucesivos", 0, 0, "L");
     $this->SetXY( 116 , 66 );
     $this->SetFont( "Helvetica", "B", 8);
-    $this->Cell(20,4, "Reservas y observaciones del transportista sobre la mercancía", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Reservas y observaciones del transportista sobre la mercancía"), 0, 0, "L");
 	$this->SetTextColor(0,0,0);
 }
 function marco_rojo_678($pagina)
@@ -617,7 +617,7 @@ function marco_rojo_3($pagina)
     $this->Cell(20,4, "3", 0, 0, "L");
     $this->SetXY( 10.5 , 65 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Destino de la mercancía", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Destino de la mercancía"), 0, 0, "L");
     $this->SetXY( 10.5 , 66.7 );
     $this->SetFont( "Helvetica", "", 5);
     $this->Cell(20,4, "Prise en charge de la marchandise", 0, 0, "L");
@@ -636,7 +636,7 @@ function marco_deca_3()
     $this->SetTextColor(0,0,80);
     $this->SetXY(7,66);
     $this->SetFont( "Helvetica", "B", 8);
-    $this->Cell(20,4, "Destino de la mercancía", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Destino de la mercancía"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
 }
 function addClientAdresse_3( $adresse )
@@ -739,7 +739,7 @@ function marco_rojo_5($pagina, $instr_5)
 	$this->Cell(20,4, "Instrucciones del expedidor", 0, 0, "L");
     $this->SetXY( 10.5 , 96.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Instructions de l'expéditeur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Instructions de l'expéditeur"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $this->SetXY( 12, 102);
     $this->SetFont( "Helvetica", "", 10);
@@ -796,7 +796,7 @@ function marco_rojo_9($pagina, $cod_cmr)
     $this->Cell(20,4, "Documentos entregados al transportista por el expedidor", 0, 0, "L");
     $this->SetXY( 115.6 , 96.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Documents remis au transporteur par l'expéditeur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Documents remis au transporteur par l'expéditeur"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $this->SetXY( 117, 102);
     $this->SetFont( "Helvetica", "", 10);
@@ -868,7 +868,7 @@ function marco_rojo_16($pagina, $instr_16)
     $this->Cell(20,4, "Instrucciones del expedidor al transportista", 0, 0, "L");
     $this->SetXY( 14 , 191.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Conventions particulières entre l'expéditeur et le transporteur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Conventions particulières entre l'expéditeur et le transporteur"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $this->SetXY( 12, 200);
     $this->SetFont( "Helvetica", "", 10);
@@ -1105,12 +1105,12 @@ function marco_rojo_20($pagina)
     $this->Cell(20,4, "20", 0, 0, "L");
     $this->SetXY( 14 , 232 );
     $this->SetFont( "Arial", "B", 7);
-    $this->Cell(20,4, "Este transporte queda sometido al convenio sobre el Contrato de
-	Transporte Internacional de Mercancias por Carretera (CMR)", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Este transporte queda sometido al convenio sobre el Contrato de
+	Transporte Internacional de Mercancias por Carretera (CMR)"), 0, 0, "L");
     $this->SetXY( 14 , 234.7 );
     $this->SetFont( "Arial", "B", 7);
-    $this->Cell(20,4, "Ce transport est soumis, nonobstant toute clause contraire, à la Convention
-	relative au contrat de transport international de marchandises par route (CMR)", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Ce transport est soumis, nonobstant toute clause contraire, à la Convention
+	relative au contrat de transport international de marchandises par route (CMR)"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
 }
 function marco_rojo_21($direccion2, $pagina)
@@ -1146,7 +1146,7 @@ function marco_rojo_21($direccion2, $pagina)
     $this->Cell(20,4, "Lugar y fecha del contrato", 0, 0, "L");
     $this->SetXY( 14 , 243.2 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Etablie à", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Etablie à"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $this->SetXY( 40, 242.5);
     $this->SetFont( "Helvetica", "B", 12);
@@ -1219,7 +1219,7 @@ function marco_rojo_22($pagina, $empresa)
     $this->Cell(20,4, "Firma o sello del expedidor", 0, 0, "L");
     $this->SetXY( 7 , 269.7 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Signature ou timbre de l'expéditeur", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Signature ou timbre de l'expéditeur"), 0, 0, "L");
     $this->SetTextColor(0,0,0);
     $this->SetXY( 35 , 265 );
     $this->SetFont( "Helvetica", "B", 7);
@@ -1246,7 +1246,7 @@ function marco_deca_22($empresa)
 }
 function logo()
 {
-    $this->Image('../img_sat/logo_web.png',25,252,30);
+    $this->Image('../img/logo_web.png',25,252,30);
 }
 function marco_rojo_23($pagina, $matricula)
 {
@@ -1349,13 +1349,13 @@ function marco_rojo_24($pagina, $empresa)
     $this->Cell(20,4, "24", 0, 0, "L");
     $this->SetXY( 150 , 241.5 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Recibo de mercancía:", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Recibo de mercancía:"), 0, 0, "L");
     $this->SetXY( 150 , 243.2 );
     $this->SetFont( "Helvetica", "", 5);
-    $this->Cell(20,4, "Marchandises reçues:", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Marchandises reçues:"), 0, 0, "L");
     $this->SetXY( 143 , 246.2 );
     $this->SetFont( "Helvetica", "B", 6);
-    $this->Cell(20,4, "Lugar, fecha y hora / Lieu et heure d'arrivée", 0, 0, "L");
+    $this->Cell(20,4, iconv("UTF-8", "ISO-8859-1", "Lugar, fecha y hora / Lieu et heure d'arrivée"), 0, 0, "L");
     $this->SetXY( 143 , 268 );
     $this->SetFont( "Helvetica", "", 5);
     $this->Cell(20,4, "Firma y sello del destinatario", 0, 0, "L");
@@ -1380,7 +1380,7 @@ function marco_deca_24($empresa)
     $this->SetTextColor(0,0,80);
     $this->SetXY(143,261.5);
     $this->SetFont( "Helvetica", "B",8);
-    $this->Cell(20,4, "Recibo de mercancía:", 0, 0, "L");
+    $this->Cell(20,4,  iconv("UTF-8", "ISO-8859-1","Recibo de mercancía:"), 0, 0, "L");
     $this->SetXY(143,265.2);
     $this->SetFont( "Helvetica", "B", 6);
     $this->Cell(20,4, "Lugar, fecha y hora", 0, 0, "L");
