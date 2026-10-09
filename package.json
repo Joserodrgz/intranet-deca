@@ -1,0 +1,13 @@
+{
+  "name": "intranet-deca",
+  "version": "1.2.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Joserodrgz/intranet-deca.git"
+  },
+  "scripts": {
+    "release": "bash ci/release.sh",
+    "build": "bash ci/build.sh"
+  }
+}
