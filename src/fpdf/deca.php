@@ -8,6 +8,8 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/informix/datos_y_funciones_pdf.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas_deca.php');
+
 $codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
