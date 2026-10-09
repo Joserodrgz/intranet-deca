@@ -8,7 +8,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/informix/datos_y_funciones_pdf.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
-$codep = new phpsecureurl;
+$codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
   $url2 = $codep->decode($url2);
@@ -235,27 +235,41 @@ $pdf->addLineFormat($cols);
 $y = 113;
 
 if (trim($fecha != '')) {
-  $consulta = ("  select distinct art_hliven as cod_art, mar_hliven as marc_lin, bul_hliven as bult_lin, 
-		bru_hliven as brut_lin,
-        env_hliven as enva_lin, num_hliven as nume_lin, des_art
-        from ffhliven, ffarticu
-        where
-        trim(emp_hliven) = '$empr'
-        and cli_hliven = '$cliente'
-        and fec_hliven = '$fechafinal'
-        and alb_hliven =  $numero
-        and ind_hliven = '$estado'
-        and cod_art = art_hliven
-        order by num_hliven                ");
+  $consulta = "
+    SELECT DISTINCT
+      art_hliven AS cod_art,
+      mar_hliven AS marc_lin,
+      bul_hliven AS bult_lin,
+      bru_hliven AS brut_lin,
+      env_hliven AS enva_lin,
+      num_hliven AS nume_lin,
+      des_art
+    FROM ffhliven, ffarticu
+    WHERE TRIM(emp_hliven) = '$empr'
+      AND cli_hliven = '$cliente'
+      AND fec_hliven = '$fechafinal'
+      AND alb_hliven = $numero
+      AND ind_hliven = '$estado'
+      AND cod_art = art_hliven
+    ORDER BY num_hliven
+  ";
 } else {
-  $consulta = ("  select des_art, nume_lin, cod_art, marc_lin, bult_lin, brut_lin, enva_lin
-        from ffarticu, fflineas
-        where
-        empr_lin = '$empr'
-        and alba_lin = $numero
-        and indi_lin = '$estado'
-        and cod_art = arti_lin
-        order by nume_lin                ");
+  $consulta = "
+    SELECT
+      des_art,
+      nume_lin,
+      cod_art,
+      marc_lin,
+      bult_lin,
+      brut_lin,
+      enva_lin
+    FROM ffarticu, fflineas
+    WHERE empr_lin = '$empr'
+      AND alba_lin = $numero
+      AND indi_lin = '$estado'
+      AND cod_art = arti_lin
+    ORDER BY nume_lin
+  ";
 }
 
 $resultado = odbc_exec($conexion, $consulta);
