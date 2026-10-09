@@ -205,30 +205,50 @@ $pdf->addClientAdresse_4("$direccion1, $direccion2\n$fechainicial");
 $pdf->marco_deca_5($instr_5);
 $pdf->marco_deca_9($cod_cmr);
 
-$centro_venta = '00';
+$consulta_serie = "
+  SELECT serie
+  FROM ffalbara
+  WHERE empr_alb = '$empr'
+    AND nume_alb = $numero
+    AND stat_alb = '$estado'
+    AND clie_alb = '$cliente'
+";
+$res_serie = odbc_exec($conexion, $consulta_serie);
+
+if (!$res_serie) {
+  $err = odbc_errormsg();
+  printf('5. Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+}
+
+$seriefactura = trim(odbc_result($res_serie, "serie"));
+odbc_free_result($res_serie);
+
+if ($seriefactura == '') {
+  $seriefactura = $empr;
+}
+
 $numero_fra = str_pad($numero, 6, '0', STR_PAD_LEFT);
-$seriefactura = serie_factura($numero, $aaaa, $estado, $empr, $centro_venta);
 $numero_pdf = $seriefactura . '-' . $numero_fra;
 $pdf->addClientAdresse_9($numero_pdf);
 
 // Columnas de líneas de mercancía
 $cols = array(
-  "Marcas"           => 30,
-  "Bultos"           => 15,
-  "Envase"           => 30,
-  "Mercancia"        => 80,
+  "Marcas" => 30,
+  "Bultos" => 15,
+  "Envase" => 30,
+  "Mercancia" => 80,
   "Peso bruto en kg" => 25,
-  "Volumen en m3"    => 20.2
+  "Volumen en m3" => 20.2
 );
 $pdf->addCols_venta_deca($cols);
 
 $cols = array(
-  "Marcas"           => "L",
-  "Bultos"           => "R",
-  "Envase"           => "L",
-  "Mercancia"        => "L",
+  "Marcas" => "L",
+  "Bultos" => "R",
+  "Envase" => "L",
+  "Mercancia" => "L",
   "Peso bruto en kg" => "R",
-  "Volumen en m3"    => "R"
+  "Volumen en m3" => "R"
 );
 $pdf->addLineFormat($cols);
 
@@ -243,14 +263,18 @@ if (trim($fecha != '')) {
       bru_hliven AS brut_lin,
       env_hliven AS enva_lin,
       num_hliven AS nume_lin,
-      des_art
-    FROM ffhliven, ffarticu
+      des_art,
+      amp_marcas,
+    FROM ffhliven, ffarticu, OUTER ffmarcas
     WHERE TRIM(emp_hliven) = '$empr'
       AND cli_hliven = '$cliente'
       AND fec_hliven = '$fechafinal'
       AND alb_hliven = $numero
       AND ind_hliven = '$estado'
       AND cod_art = art_hliven
+      AND emp_marcas = emp_hliven
+      AND art_marcas = art_hliven
+      AND mar_marcas = mar_hliven
     ORDER BY num_hliven
   ";
 } else {
@@ -262,15 +286,20 @@ if (trim($fecha != '')) {
       marc_lin,
       bult_lin,
       brut_lin,
-      enva_lin
-    FROM ffarticu, fflineas
+      enva_lin,
+      amp_marcas,
+    FROM ffarticu, fflineas, OUTER ffmarcas
     WHERE empr_lin = '$empr'
       AND alba_lin = $numero
       AND indi_lin = '$estado'
       AND cod_art = arti_lin
+      AND emp_marcas = empr_lin
+      AND art_marcas = arti_lin
+      AND mar_marcas = marc_lin
     ORDER BY nume_lin
   ";
 }
+
 
 $resultado = odbc_exec($conexion, $consulta);
 
@@ -291,6 +320,7 @@ while ((odbc_fetch_row($resultado)) && ($lineas < 30)) {
     $des_env = ' ';
   }
 
+  $amp_marcas = odbc_result($resultado, "amp_marcas");
   $marc_lin = odbc_result($resultado, "marc_lin");
   $cod_marca = substr($marc_lin, 0, 1);
   $des_marca = $marca_com[$cod_marca];
@@ -303,12 +333,12 @@ while ((odbc_fetch_row($resultado)) && ($lineas < 30)) {
   $des_art = limpiar(odbc_result($resultado, "des_art"));
 
   $line = array(
-    "Marcas"           => "$des_marca",
-    "Bultos"           => "$bult_lin",
-    "Envase"           => "$des_env",
-    "Mercancia"        => "$des_art",
+    "Marcas" => "$amp_marcas",
+    "Bultos" => "$bult_lin",
+    "Envase" => "$des_env",
+    "Mercancia" => "$des_art",
     "Peso bruto en kg" => "$brut_lin",
-    "Volumen en m3"    => " "
+    "Volumen en m3" => " "
   );
   $size = $pdf->addLine($y, $line);
   $y += $size - 0.5;
@@ -325,12 +355,12 @@ if ($lineas == 30) {
     $total_bruto = number_format($total_bruto, 2, ",", ".");
 
     $line = array(
-      "10 Marcas"           => "...",
-      "11 Bultos"           => "$total_bultos",
-      "12 Envase"           => "...",
-      "13 Mercancia"        => "Resto de mercancia en documento adjunto ",
+      "10 Marcas" => "...",
+      "11 Bultos" => "$total_bultos",
+      "12 Envase" => "...",
+      "13 Mercancia" => "Resto de mercancia en documento adjunto ",
       "14 Peso bruto en kg" => "$total_bruto",
-      "15 Volumen en m3"    => " "
+      "15 Volumen en m3" => " "
     );
     $size = $pdf->addLine($y, $line);
     $y += $size - 0.5;
