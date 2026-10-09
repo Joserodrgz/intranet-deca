@@ -245,7 +245,7 @@ switch ($accion) {
     if ($a % 2 == 1) {
       echo " class=odd";
     }
-    echo "><td class=firstcol align=left><div id=tit2>Matrículas</div></td>";
+    echo iconv("UTF-8", "ISO-8859-1", "><td class=firstcol align=left><div id=tit2>Matrículas</div></td>");
     echo "<td align=left colspan=3>
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'
 	type='text' name='matricula' id='matricula_id'
@@ -290,7 +290,7 @@ switch ($accion) {
     if ($a % 2 == 1) {
       echo " class=odd";
     }
-    echo "><td class=firstcol align=left><div id=tit2>País destino</div></td>";
+    echo iconv("UTF-8", "ISO-8859-1", "><td class=firstcol align=left><div id=tit2>País destino</div></td>");
     echo "<td align=left width=10%><input STYLE='text-align:left' type='text' name='paisdestino' id='paisText' 
     size='6'  maxlength='5' value='$pai_satalbtte' tabindex='5'
  	onkeyup='this.value=this.value.toUpperCase()'        
@@ -339,7 +339,7 @@ switch ($accion) {
 
     echo "<TABLE align=center width=50 class=acceso id='buscador_pais' STYLE='display:none';>";
     echo "<tr class=azul>";
-    echo "<td align=left><div id=tit2>Buscar país destino por nombre</div></td></tr><tr>";
+    echo iconv("UTF-8", "ISO-8859-1", "<td align=left><div id=tit2>Buscar país destino por nombre</div></td></tr><tr>");
     echo "<td align=left> <input type=text name=busc_pais id='busc_pais' size='50'  maxlength='35' value=''
    	onKeyUp='buscar_pais()'></td></tr><tr>";
     echo "<td align=left width=50>
@@ -416,7 +416,7 @@ function modifica_linea(
   if (($paisdestino == '') && ($en_destino == '')) {
     echo "<TABLE align=center width=97% class=gris>";
     echo "<tr class=amarillo>";
-    echo "<td align=center><div id=tit1>Falta el país destino o quién paga el transporte</div>";
+    echo iconv("UTF-8", "ISO-8859-1", "<td align=center><div id=tit1>Falta el país destino o quién paga el transporte</div>");
     echo "</td></tr></table>";
     exit();
   }
