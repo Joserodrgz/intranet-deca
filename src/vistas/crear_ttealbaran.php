@@ -512,20 +512,6 @@ function modifica_linea(
       printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
     }
     odbc_free_result($res_cta);
-
-    $accion_log = 'MODIFCAR';
-    $tabla_log = 'TTE ALBARAN';
-    $dato_anterior = '';
-    $dato_nuevo =
-      'Albaran ' . $numero .
-      ' Cliente ' . $cliente .
-      ' Ejercicio ' . $aaaa .
-      ' Transportista ' . $t_nom_cli .
-      ' Conductor ' . $chofer .
-      ' NIF ' . $chofer_nif .
-      ' Martricula ' . $matricula .
-      ' Pais dest ' . $paisdestino;
-    inserta_log($user_log, $accion_log, $tabla_log, $dato_anterior, $dato_nuevo);
   }
 
   $gasto_tte = "
