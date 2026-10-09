@@ -52,13 +52,13 @@ $fecha_creacion_deca = date('Y-m-d H:i:s');
 $referencia_deca_sql = str_replace("'", "''", $referencia_deca);
 $token_deca_sql = str_replace("'", "''", $token_deca);
 $nombre_pdf_deca = $referencia_deca_sql . '.pdf';
-$directorio_ventas = $originales . 'deca/';
+$directorio_deca = $originales . 'deca/' . date('Y') . '/' . date('m') . '/';
 
-if (!is_dir($directorio_ventas)) {
-  mkdir($directorio_ventas, 0777);
+if (!is_dir($directorio_deca)) {
+  mkdir($directorio_deca, 0777, true);
 }
 
-$ruta_pdf_deca = $originales . 'deca/' . $nombre_pdf_deca;
+$ruta_pdf_deca = $directorio_deca . $nombre_pdf_deca;
 $nombre_pdf_deca_sql = str_replace("'", "''", $nombre_pdf_deca);
 
 $sql = "
