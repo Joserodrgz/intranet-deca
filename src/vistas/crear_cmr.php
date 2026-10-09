@@ -300,7 +300,7 @@ echo "<td align=left colspan=2><div id=tit3>
 echo "</div></td></tr><tr class=amarillo>";
 echo "<td align=left><div id=tit2>16 Instrucciones al transportista";
 echo "<td align=left><input STYLE='text-align:left' type='text' name='instr_16' id='instr_16_id'
-	size='40' maxlength='40' value='TEMPERATURA +4ºC' tabindex='8'
+	size='40' maxlength='40' value='' tabindex='8'
 	onkeyup='this.value=this.value.toUpperCase()'
 	></div></tr><tr class=amarillo>";
 
