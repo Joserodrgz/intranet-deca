@@ -12,7 +12,7 @@ source "${SELF_DIR}/build.lib.sh"
 
 BASE_BRANCH="main"
 
-SRC_DIR="deca"
+SRC_DIR="src"
 DIST_DIR="dist"
 BUILD_DIR="${DIST_DIR}/deca"
 
