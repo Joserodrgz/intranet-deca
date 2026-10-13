@@ -8,6 +8,8 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/informix/datos_y_funciones_pdf.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas_deca.php');
+
 $codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
@@ -264,7 +266,7 @@ if (trim($fecha != '')) {
       env_hliven AS enva_lin,
       num_hliven AS nume_lin,
       des_art,
-      amp_marcas,
+      amp_marcas
     FROM ffhliven, ffarticu, OUTER ffmarcas
     WHERE TRIM(emp_hliven) = '$empr'
       AND cli_hliven = '$cliente'
@@ -287,7 +289,7 @@ if (trim($fecha != '')) {
       bult_lin,
       brut_lin,
       enva_lin,
-      amp_marcas,
+      amp_marcas
     FROM ffarticu, fflineas, OUTER ffmarcas
     WHERE empr_lin = '$empr'
       AND alba_lin = $numero
