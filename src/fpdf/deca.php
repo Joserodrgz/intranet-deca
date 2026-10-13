@@ -264,7 +264,7 @@ if (trim($fecha != '')) {
       env_hliven AS enva_lin,
       num_hliven AS nume_lin,
       des_art,
-      amp_marcas,
+      amp_marcas
     FROM ffhliven, ffarticu, OUTER ffmarcas
     WHERE TRIM(emp_hliven) = '$empr'
       AND cli_hliven = '$cliente'
@@ -287,7 +287,7 @@ if (trim($fecha != '')) {
       bult_lin,
       brut_lin,
       enva_lin,
-      amp_marcas,
+      amp_marcas
     FROM ffarticu, fflineas, OUTER ffmarcas
     WHERE empr_lin = '$empr'
       AND alba_lin = $numero
