@@ -8,5 +8,6 @@
   "scripts": {
     "release": "bash ci/release.sh",
     "build": "bash ci/build.sh"
-  }
+  },
+  "version": "0.1.0"
 }
