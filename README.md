@@ -53,29 +53,51 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
 
 ## Instalación
 
-1. Clona el repositorio:
+1. Clona el repositorio y genera el paquete desde `main`:
 
     ```sh
     git clone https://github.com/Joserodrgz/intranet-deca.git
     cd intranet-deca
+    git checkout main
+    npm run build
     ```
 
-2. Copia la carpeta `phpdeca/deca` al servidor del cliente, en `/tmp`.
+    El paquete queda en `dist/intranet-deca-v<versión>.tgz`.
+
+2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`:
 
     ```sh
-    sudo cp /tmp/deca/_configs/* /srv/www/htdocs/_configs
-    sudo cp /tmp/deca/fpdf/*     /srv/www/htdocs/fpdf
-    sudo cp /tmp/deca/informix/* /srv/www/htdocs/informix
-    sudo cp /tmp/deca/vistas/*   /srv/www/htdocs/informix/vistas
+    tar -xzf intranet-deca-v<versión>.tgz -C /tmp
     ```
 
-3. Vuelve a dar permisos a `/srv/www/htdocs`:
+3. Ejecuta el script de instalación con `sudo`:
 
     ```sh
-    cd /srv/www
-    sudo sharedir.sh htdocs
-    sudo chown -R wwwrun:www htdocs
+    sudo bash /tmp/deca/install.sh
     ```
+
+El script `install.sh`:
+
+- Comprueba que se ejecuta como root y que existen `/srv/www/htdocs`,
+  `release.json`, `sharedir.sh` y `tarhtdocs.sh`
+- Hace una copia de seguridad de `htdocs` con `tarhtdocs.sh`
+- Copia cada carpeta del paquete a su destino:
+
+    | Paquete    | Destino                           |
+    | ---------- | --------------------------------- |
+    | `_configs` | `/srv/www/htdocs/_configs`        |
+    | `fpdf`     | `/srv/www/htdocs/fpdf`            |
+    | `informix` | `/srv/www/htdocs/informix`        |
+    | `vistas`   | `/srv/www/htdocs/informix/vistas` |
+
+- Restaura los permisos con `sharedir.sh` y `chown -R wwwrun:www`
+- Muestra la versión instalada
+
+**Nota:** para instalar en otra ruta, indícala con la variable `HTDOCS`:
+
+```sh
+sudo HTDOCS=/ruta/htdocs bash /tmp/deca/install.sh
+```
 
 ## Integración en la intranet
 
