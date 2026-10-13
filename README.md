@@ -81,20 +81,34 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
 
 ### Envases en el DECA
 
-La columna Envase del DECA usa la función `envase()`. Es opcional:
+`fpdf/deca.php` rellena la columna Envase llamando a `envase()` con el código
+de envase de cada línea. La función es opcional:
 
-| Cliente | Resultado |
-| --- | --- |
+| Cliente                                         | Resultado                            |
+| ----------------------------------------------- | ------------------------------------ |
 | Tiene `envase()` en su `_configs/consultas.php` | Se muestra la descripción del envase |
-| No tiene `envase()` | La columna queda en blanco |
+| No tiene `envase()`                             | La columna queda en blanco           |
 
-`fpdf/deca.php` incluye `_configs/consultas_deca.php` después de
-`_configs/consultas.php`. Ese fichero solo define una `envase()` vacía si el
-cliente no tiene la suya, así que no hay conflicto de funciones duplicadas.
+`fpdf/deca.php` incluye primero `_configs/consultas.php` y después
+`_configs/consultas_deca.php`. Este último define una `envase()` que devuelve
+una cadena vacía, pero solo si el cliente no tiene la suya:
 
-Para mostrar los envases en un cliente que no tiene la función, copia
+```php
+if (!function_exists('envase')) {
+  // Cliente sin envases: la columna "Envase" del DECA queda en blanco
+  function envase($codigo)
+  {
+    return '';
+  }
+}
+```
+
+Si el cliente ya tiene `envase()`, el `function_exists()` evita el error de
+función duplicada y se usa la del cliente.
+
+Para mostrar los envases en un cliente sin `envase()`, copia la función de
 [snippets/consultas.php](snippets/consultas.php) en su
-`_configs/consultas.php`:
+`_configs/consultas.php`, sin la etiqueta `<?php` del principio:
 
 ```php
 function envase($cod_env)
