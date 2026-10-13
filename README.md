@@ -20,47 +20,27 @@ Necesaria para generar la imagen del QR. Instala con YaST el paquete:
 php5-gd
 ```
 
-### Tabla satalbtte
-
-Comprueba si la tabla existe en Informix.
-
-**Si no existe**, créala ejecutando `informix/_crear_tablas.php`, que ya
-incluye los campos nuevos.
-
-**Si ya existe**, añade los campos nuevos:
-
-```sql
--- Campo pai_satalbtte
-ALTER TABLE satalbtte
-ADD (pai_satalbtte CHAR(3));
-
--- Campo en_destino
-ALTER TABLE satalbtte
-ADD (en_destino CHAR(3));
-```
-
-Comprueba también que la columna `emp_satalbtte` es `CHAR(2)`:
-
-```text
-Column name      Type       Nulls
-emp_satalbtte    char(2)    no
-```
-
-### Tabla phpdeca
-
-No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
-índices, la primera vez que se ejecuta.
-
 ## Instalación
 
-1. Clona el repositorio:
+1. Clona el repositorio y genera el paquete desde `main`:
 
     ```sh
     git clone https://github.com/Joserodrgz/intranet-deca.git
     cd intranet-deca
+    git checkout main
+    npm run build
     ```
 
-2. Copia la carpeta `phpdeca/deca` al servidor del cliente, en `/tmp`.
+    El build deja el paquete en `dist/intranet-deca-v<versión>.tgz`.
+
+2. Copia el paquete al servidor del cliente, en `/tmp`, y descomprímelo:
+
+    ```sh
+    cd /tmp
+    tar -xzf intranet-deca-v<versión>.tgz
+    ```
+
+3. Copia cada carpeta a su destino:
 
     ```sh
     sudo cp /tmp/deca/_configs/* /srv/www/htdocs/_configs
@@ -69,7 +49,7 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
     sudo cp /tmp/deca/vistas/*   /srv/www/htdocs/informix/vistas
     ```
 
-3. Vuelve a dar permisos a `/srv/www/htdocs`:
+4. Vuelve a dar permisos a `/srv/www/htdocs`:
 
     ```sh
     cd /srv/www
