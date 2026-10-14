@@ -8,7 +8,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/colores.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
-$codep = new phpsecureurl;
+$codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
   $url12 = $codep->decode($url12);
@@ -179,7 +179,7 @@ $a = 1;
 
 if (($estado == 'R') || ($estado == 'C')) {
   echo iconv("UTF-8", "ISO-8859-1", "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png width='24' height='16' class='middle'> 
-    &nbsp;de la factura $numero del almacén $empr de ") . $nom_cli . " &nbsp;&nbsp;</legend>";	
+    &nbsp;de la factura $numero del almacén $empr de ") . $nom_cli . " &nbsp;&nbsp;</legend>";
 }
 
 if ($estado == 'A') {
@@ -189,7 +189,8 @@ if ($estado == 'A') {
 
 $url_cmr = sprintf("../../fpdf/cmr.php");
 
-if ($pai_satalbtte == 'ES') {
+// DECA solo si el destino es España y se ha indicado quién paga el transporte
+if (($pai_satalbtte == 'ES') && ($en_destino != '')) {
   $url_cmr = sprintf("../../fpdf/deca.php");
 }
 

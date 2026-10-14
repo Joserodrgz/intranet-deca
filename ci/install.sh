@@ -36,6 +36,7 @@ MAPPINGS=(
   "fpdf:fpdf"
   "informix:informix"
   "vistas:informix/vistas"
+  "img:img"
 )
 
 for map in "${MAPPINGS[@]}"; do
