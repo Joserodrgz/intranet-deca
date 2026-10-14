@@ -45,7 +45,7 @@ mkdir -p "${BUILD_DIR}"
 ## copy runtime files
 
 cp -a "${SRC_DIR}/." "${BUILD_DIR}/"
-cp ci/install.sh "${BUILD_DIR}/"
+cp ci/install.sh "${BUILD_DIR}/install.sh"
 
 ## generate version file
 
