@@ -307,16 +307,16 @@ switch ($accion) {
       echo " class=odd";
     }
     echo "><td align=left><div id=tit2>Pagar transporte";
-    echo "<td align=left colspan=3><div id=tit3><input type=radio name=en_destino value='S' ";
+    echo "<td align=left colspan=3><div id=tit3><input type=checkbox name=en_destino value='S' ";
     if ($en_destino == 'S') {
-      echo "checked";
+      echo "checked ";
     }
-    echo ">&nbsp;&nbsp;Destino&nbsp;&nbsp;&nbsp;&nbsp;";
-    echo " <input type=radio name=en_destino value='N' ";
+    echo "onclick='marcar_unico(this)'>&nbsp;&nbsp;Destino&nbsp;&nbsp;&nbsp;&nbsp;";
+    echo " <input type=checkbox name=en_destino value='N' ";
     if ($en_destino == 'N') {
-      echo "checked";
+      echo "checked ";
     }
-    echo ">&nbsp;&nbsp;Origen&nbsp;&nbsp;&nbsp;&nbsp;";
+    echo "onclick='marcar_unico(this)'>&nbsp;&nbsp;Origen&nbsp;&nbsp;&nbsp;&nbsp;";
     echo "</div></td>";
 
     echo "<INPUT TYPE=hidden NAME=accion VALUE=2>";
@@ -348,6 +348,16 @@ switch ($accion) {
     echo "</tr></table>";
 
     ?><script>
+			// Checkboxes con el mismo nombre que se comportan como radio, pero se pueden desmarcar
+			function marcar_unico(check) {
+				var checks = document.getElementsByName(check.name);
+				for (var i = 0; i < checks.length; i++) {
+					if (checks[i] !== check) {
+						checks[i].checked = false;
+					}
+				}
+			}
+
 			function muestradata(form) {
 				checkSubmit();
 				form.submit();
@@ -412,6 +422,28 @@ function modifica_linea(
   include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
   $codep = new phpsecureurl();
   global $PHP_SELF;
+
+  // Sin datos de transporte: se borra el registro para que el albarán vuelva a
+  // quedar sin transporte (icono vacío) y se genere CMR en lugar de DECA.
+  // Destino, En y País no cuentan porque se rellenan solos con los datos del cliente.
+  $datos_tte = trim($transportista . $chofer . $chofer_nif . $matricula . $en_destino);
+
+  if ($datos_tte == '') {
+    $borra_tte = "
+      DELETE FROM satalbtte
+      WHERE emp_satalbtte = '$empr'
+        AND alb_satalbtte = $numero
+        AND sta_satalbtte = '$estado'
+        AND ano_satalbtte = '$aaaa'
+    ";
+    $res_borra = odbc_exec($conexion, $borra_tte);
+    if (!$res_borra) {
+      $err = odbc_errormsg();
+      printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+    }
+    odbc_free_result($res_borra);
+    return;
+  }
 
   if (($paisdestino == '') && ($en_destino == '')) {
     echo "<TABLE align=center width=97% class=gris>";
