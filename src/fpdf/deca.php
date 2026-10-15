@@ -192,7 +192,7 @@ $pdf->marco_deca_3();
 
 // Dirección de destino
 $paisdestino = $paises[$paisdestino];
-$paisdestino = utf8_encode($paisdestino);
+$paisdestino = iconv('UTF-8', 'ISO-8859-1', $paisdestino);
 
 if (!$dest1) {
   $dest1 = $ro_dir_cli;

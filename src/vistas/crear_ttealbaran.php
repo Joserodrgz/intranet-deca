@@ -353,9 +353,9 @@ switch ($accion) {
 			function limpiarTexto(campo) {
 				campo.value = campo.value
 					.normalize('NFD')
-					.replace(/[̀-ͯ]/g, '')
-					.replace(/ñ/g, 'n')
-					.replace(/Ñ/g, 'N')
+					.replace(/[\u0300-\u036f]/g, '')
+					.replace(/\u00f1/g, 'n')
+					.replace(/\u00d1/g, 'N')
 					.toUpperCase();
 			}
 
