@@ -7,18 +7,18 @@ global $PHP_SELF, $cuenta;
 var cuenta = new Array();
 var  lista_cuenta = new Array();
 <?php
-        $consulta = " select cod_rem, nom_rem from ffremite WHERE acreoprove = 'A' ORDER BY cod_rem";
+    $consulta = " select cod_rem, nom_rem from ffremite WHERE acreoprove = 'A' ORDER BY cod_rem";
 	$resultado=odbc_exec($conexion, $consulta);
-        if(!$resultado)
-	{$err = odbc_errormsg();printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
-        while ($row = odbc_fetch_row($resultado)){
+    if(!$resultado){$err = odbc_errormsg();
+	printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
+    while ($row = odbc_fetch_row($resultado)){
 	$des_cta=limpiar(odbc_result($resultado,"nom_rem"));
 	$cod_cta=trim(odbc_result($resultado,"cod_rem"));
-        echo "cuenta['$cod_cta'] = '$des_cta';\n";
-        $cod_cta = str_pad($cod_cta,10,' ',STR_PAD_RIGHT);        
-        echo "lista_cuenta.push('$cod_cta'+'  -   '+'$des_cta');";
-        }
-        odbc_free_result ($resultado);
+    echo "cuenta['$cod_cta'] = '$des_cta';\n";
+    $cod_cta = str_pad($cod_cta,10,' ',STR_PAD_RIGHT);        
+    echo "lista_cuenta.push('$cod_cta'+'  -   '+'$des_cta');";
+    }
+    odbc_free_result ($resultado);
 ?>
 function cargarLista_cuenta() {
         document.getElementById('buscardor_cta').style.display = 'table';

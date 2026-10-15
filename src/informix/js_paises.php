@@ -228,7 +228,7 @@ cuenta_pais['DJ'] = 'Yibuti';
 cuenta_pais['ZM'] = 'Zambia';
 cuenta_pais['ZW'] = 'Zimbabue';
 /*
-var lista_pais = [];
+var  lista_pais = [];
 for (var clave in cuenta_pais) {
     lista_pais.push(clave + ' - ' + cuenta_pais[clave]);
 }

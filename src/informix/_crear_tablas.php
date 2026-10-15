@@ -1,6 +1,6 @@
 <?php
 
-include($_SERVER['DOCUMENT_ROOT'] . '/_configs/_config.php');
+include($_SERVER['DOCUMENT_ROOT'].'/_configs/_config.php' );
 
 # Crear la tabla logalbara 
 
@@ -23,55 +23,49 @@ $crear = " 	create table logalbara
 	total_logalbara DECIMAL(12,2),
 	fech_logalbara datetime year to second
 	)      ";
-$resultado = odbc_exec($conexion, $crear);
-if (!$resultado) {
-  $err = odbc_errormsg();
-  printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);
-}
-odbc_free_result($resultado);
+	$resultado=odbc_exec($conexion, $crear);
+	if(!$resultado)
+	{$err = odbc_errormsg();printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
+    odbc_free_result ($resultado);
 
 # Crear indice de la tabla log_ffalbara 
-
-$indice = (" create index logalbara001 on logalbara (empr_logalbara, nume_logalbara, stat_logalbara,total_logalbara)");
-$indexar = odbc_exec($conexion, $indice);
-if (!$indexar) {
-  $err = odbc_errormsg();
-  printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);
-}
-odbc_free_result($indexar);
+ 
+    $indice = (" create index logalbara001 on logalbara (empr_logalbara, nume_logalbara, stat_logalbara,total_logalbara)");
+	$indexar=odbc_exec($conexion, $indice);
+	if(!$indexar)
+	{$err = odbc_errormsg();printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
+    odbc_free_result ($indexar);      
 # Crear la tabla satalbtte para transporte en albarán y gastos
 
-$crear = " 	create table satalbtte
- 			(
-    			emp_satalbtte CHAR(2) NOT NULL,
-    			alb_satalbtte INTEGER NOT NULL,
-    			sta_satalbtte CHAR(1) NOT NULL,
-     			ano_satalbtte CHAR(4), 
-    			fec_satalbtte DATETIME year to second DEFAULT CURRENT year to second NOT NULL,
-     			cod_satalbtte CHAR(8), 
-    			cia_satalbtte CHAR(50),
- 			mat_satalbtte CHAR(20),
-    			cond_satalbtte CHAR(50),    			
- 			nif_satalbtte CHAR(15),
-			dest1_satalbtte CHAR(50), 
-			dest2_satalbtte CHAR(50),
- 			usr_satalbtte CHAR(15),
-                        pai_satalbtte CHAR(3),
-                        en_destino CHAR(3)
- 			)    ";
-$resultado = odbc_exec($conexion, $crear);
-if (!$resultado) {
-  $err = odbc_errormsg();
-  printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);
-}
-odbc_free_result($resultado);
+	$crear = " 	create table satalbtte
+ 	(
+ 	emp_satalbtte 	CHAR(2) NOT NULL,
+	alb_satalbtte 	INTEGER NOT NULL,
+	sta_satalbtte 	CHAR(1) NOT NULL,
+	ano_satalbtte 	CHAR(4), 
+	fec_satalbtte 	DATETIME year to second DEFAULT CURRENT year to second NOT NULL,
+	cod_satalbtte 	CHAR(8), 
+	cia_satalbtte 	CHAR(50),
+	mat_satalbtte 	CHAR(20),
+	cond_satalbtte 	CHAR(50),    			
+	nif_satalbtte 	CHAR(15),
+	dest1_satalbtte CHAR(50), 
+	dest2_satalbtte CHAR(50),
+	usr_satalbtte 	CHAR(15),
+	en_destino 		CHAR(1),
+	pai_satalbtte 	CHAR(3)
+	)    ";
+	$resultado=odbc_exec($conexion, $crear);
+	if(!$resultado){$err = odbc_errormsg();
+	printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
+    odbc_free_result ($resultado);	
 
 # Crear indice de la tabla satalbtte
+ 
+    $indice = (" create index satalbtte001 on satalbtte (emp_satalbtte, alb_satalbtte, fec_satalbtte)");
+	$indexar=odbc_exec($conexion, $indice);
+	if(!$indexar){$err = odbc_errormsg();
+	printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);}
+    odbc_free_result ($indexar);
 
-$indice = (" create index satalbtte001 on satalbtte (emp_satalbtte, alb_satalbtte, fec_satalbtte)");
-$indexar = odbc_exec($conexion, $indice);
-if (!$indexar) {
-  $err = odbc_errormsg();
-  printf("Imposible ejecutar la consulta a Informix, motivo --->    %s ", $err);
-}
-odbc_free_result($indexar);
+?>
