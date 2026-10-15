@@ -41,6 +41,9 @@ if (!$res_empr) {
 }
 
 $cif_emp = trim(odbc_result($res_empr, "cif_emp"));
+// Solo letras y números: un espacio o un guion (p. ej. "ES B-60282423") romperían
+// la referencia, que es también el nombre del PDF en R2
+$cif_emp = preg_replace('/[^A-Z0-9]/', '', strtoupper($cif_emp));
 odbc_free_result($res_empr);
 
 //////////////////////////
@@ -359,19 +362,19 @@ echo "<td align=left width=50>
 echo "</tr></table>";
 
 // Campos ocultos
-echo "<INPUT TYPE=hidden NAME=numero VALUE=$numero>";
-echo "<INPUT TYPE=hidden NAME=estado VALUE=$estado>";
+echo "<INPUT TYPE=hidden NAME=numero VALUE='$numero'>";
+echo "<INPUT TYPE=hidden NAME=estado VALUE='$estado'>";
 $cliente_url = rawurlencode($cliente);
-echo "<INPUT TYPE=hidden NAME=cliente VALUE=$cliente_url>";
-echo "<INPUT TYPE=hidden NAME=empr VALUE=$empr>";
-echo "<INPUT TYPE=hidden NAME=aaaa VALUE=$aaaa>";
-echo "<INPUT TYPE=hidden NAME=pai_cli VALUE=$pai_satalbtte>";
-echo "<INPUT TYPE=hidden NAME=en_destino VALUE=$en_destino>";
-echo "<INPUT TYPE=hidden NAME=nombre_pdf_deca VALUE=$nombre_pdf_deca>";
-echo "<INPUT TYPE=hidden NAME=ruta_pdf_deca VALUE=$ruta_pdf_deca>";
-echo "<INPUT TYPE=hidden NAME=ejercicio_deca VALUE=$ejercicio_deca>";
-echo "<INPUT TYPE=hidden NAME=referencia_deca VALUE=$referencia_deca>";
-echo "<INPUT TYPE=hidden NAME=id_deca VALUE=$id_deca>";
+echo "<INPUT TYPE=hidden NAME=cliente VALUE='$cliente_url'>";
+echo "<INPUT TYPE=hidden NAME=empr VALUE='$empr'>";
+echo "<INPUT TYPE=hidden NAME=aaaa VALUE='$aaaa'>";
+echo "<INPUT TYPE=hidden NAME=pai_cli VALUE='$pai_satalbtte'>";
+echo "<INPUT TYPE=hidden NAME=en_destino VALUE='$en_destino'>";
+echo "<INPUT TYPE=hidden NAME=nombre_pdf_deca VALUE='$nombre_pdf_deca'>";
+echo "<INPUT TYPE=hidden NAME=ruta_pdf_deca VALUE='$ruta_pdf_deca'>";
+echo "<INPUT TYPE=hidden NAME=ejercicio_deca VALUE='$ejercicio_deca'>";
+echo "<INPUT TYPE=hidden NAME=referencia_deca VALUE='$referencia_deca'>";
+echo "<INPUT TYPE=hidden NAME=id_deca VALUE='$id_deca'>";
 
 // $url_cto = sprintf("../../fpdf/sat_contrato_vies.php");
 
