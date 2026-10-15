@@ -163,33 +163,23 @@ function envase($cod_env)
 ### Columna CMR en albaranes_dia.php
 
 `informix/albaranes_dia.php` no va en el paquete: se modifica a mano en cada
-cliente. La columna CMR muestra `DeCA.png` en los albaranes que generan DECA
-y `CMR.png` en el resto. La cabecera de la columna sigue siendo `Cmr`.
+cliente. La columna CMR muestra `DeCA.png` en los albaranes de clientes de
+España (`pai_cli = 'ES'`) y `CMR.png` en el resto. La cabecera de la columna
+sigue siendo `Cmr`.
 
-Los dos fragmentos están en
-[snippets/albaranes_dia.php](snippets/albaranes_dia.php):
+Dentro del bucle `while (odbc_fetch_row($result))`, sustituye la celda CMR
+por el fragmento de [snippets/albaranes_dia.php](snippets/albaranes_dia.php).
+`$pai_cli` ya viene de la consulta principal del listado.
 
-1. Pega el primer fragmento justo después de la consulta principal del
-   listado:
+Elimina también el condicional que envuelve la celda, porque siempre se
+cumple:
 
-    ```php
-    $result=odbc_exec($conexion, $consulta) or die ("no se ha podido realizar la consulta");
-    ```
-
-    Carga en `$albaranes_deca` los albaranes del listado que generan DECA, con
-    una sola consulta para todo el listado.
-
-2. Dentro del bucle `while (odbc_fetch_row($result))`, sustituye la celda CMR
-   por el segundo fragmento. Elimina también el condicional que la envuelve,
-   porque siempre se cumple:
-
-    ```php
-    // Eliminar
-    if ($pai_cli <> 'ES' || $pai_cli == 'ES') {
-        // ...
-    }
-    ```
-
+```php
+// Eliminar
+if ($pai_cli <> 'ES' || $pai_cli == 'ES') {
+    // ...
+}
+```
 
 ## Comprobación
 
