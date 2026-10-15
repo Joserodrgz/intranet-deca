@@ -16,12 +16,32 @@ if ($_REQUEST['hmg']) {
 
 global $PHP_SELF, $numero, $estado, $cliente, $empr;
 
+// El código de cliente puede llevar espacios o caracteres especiales
+$cliente = rawurldecode($cliente);
+
 echo "<body onload='document.forms.libro.transportista.focus()'>";
 
 $nom_cli = cliente($cliente);
 $hoy = $_SESSION["fechadetrabajo"];
 $aaaa = select_ano_($hoy);
 $ejercicio_deca = (int) date('Y');
+
+// CIF de la empresa: forma parte de la referencia del DECA para que el PDF sea
+// único en R2 aunque varios clientes compartan el mismo bucket
+$datos_empr = "
+  SELECT cif_emp
+  FROM ffempres
+  WHERE cod_emp = '$empr'
+";
+$res_empr = odbc_exec($conexion, $datos_empr);
+
+if (!$res_empr) {
+  $err = odbc_errormsg();
+  printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+}
+
+$cif_emp = trim(odbc_result($res_empr, "cif_emp"));
+odbc_free_result($res_empr);
 
 //////////////////////////
 
@@ -46,7 +66,7 @@ if ($row && $row['ultimo_numero'] !== null) {
 
 odbc_free_result($rs);
 
-$referencia_deca = 'DECA-' . $ejercicio_deca . '-' . str_pad($numero_deca, 6, '0', STR_PAD_LEFT);
+$referencia_deca = 'DECA-' . $cif_emp . '-' . $ejercicio_deca . '-' . str_pad($numero_deca, 6, '0', STR_PAD_LEFT);
 $token_deca = bin2hex(openssl_random_pseudo_bytes(32));
 $fecha_creacion_deca = date('Y-m-d H:i:s');
 $referencia_deca_sql = str_replace("'", "''", $referencia_deca);
@@ -341,7 +361,8 @@ echo "</tr></table>";
 // Campos ocultos
 echo "<INPUT TYPE=hidden NAME=numero VALUE=$numero>";
 echo "<INPUT TYPE=hidden NAME=estado VALUE=$estado>";
-echo "<INPUT TYPE=hidden NAME=cliente VALUE=$cliente>";
+$cliente_url = rawurlencode($cliente);
+echo "<INPUT TYPE=hidden NAME=cliente VALUE=$cliente_url>";
 echo "<INPUT TYPE=hidden NAME=empr VALUE=$empr>";
 echo "<INPUT TYPE=hidden NAME=aaaa VALUE=$aaaa>";
 echo "<INPUT TYPE=hidden NAME=pai_cli VALUE=$pai_satalbtte>";
