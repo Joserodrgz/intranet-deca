@@ -149,7 +149,7 @@ switch ($accion) {
       );
     } else {
       $url = sprintf(
-        "../../fpdf/albaran_eu$alias_pdf.php?numero=%s&estado=%s&cliente=%s&empr=%s",
+        "../../fpdf/albaran$alias_pdf.php?numero=%s&estado=%s&cliente=%s&empr=%s",
         $numero,
         $estado,
         $cliente_url,
@@ -205,7 +205,7 @@ switch ($accion) {
       );
     } else {
       $url_ema = sprintf(
-        "../../fpdf/albaran_eu$alias_pdf.php?numero=%s&estado=%s&cliente=%s&empr=%s&ema_cli=%s",
+        "../../fpdf/albaran$alias_pdf.php?numero=%s&estado=%s&cliente=%s&empr=%s&ema_cli=%s",
         $numero,
         $estado,
         $cliente_url,
