@@ -145,9 +145,9 @@ switch ($accion) {
     $mat_satalbtte = trim(odbc_result($res_tte, "mat_satalbtte"));
     $cond_satalbtte = limpiar(odbc_result($res_tte, "cond_satalbtte"));
     $nif_satalbtte = limpiar(odbc_result($res_tte, "nif_satalbtte"));
-    $dest1_satalbtte = trim(odbc_result($res_tte, "dest1_satalbtte"));
-    $dest2_satalbtte = trim(odbc_result($res_tte, "dest2_satalbtte"));
-    $pai_satalbtte = trim(odbc_result($res_tte, "pai_satalbtte"));
+    $dest1_satalbtte = limpiar(odbc_result($res_tte, "dest1_satalbtte"));
+    $dest2_satalbtte = limpiar(odbc_result($res_tte, "dest2_satalbtte"));
+    $pai_satalbtte = limpiar(odbc_result($res_tte, "pai_satalbtte"));
     $en_destino = trim(odbc_result($res_tte, "en_destino"));
     odbc_free_result($res_tte);
 
@@ -204,7 +204,7 @@ switch ($accion) {
     echo "><td class=firstcol align=left width=30%><div id=tit2>Transportista</div></td>";
     echo "<td align=left width=10%><input STYLE='text-align:left' type='text' name='transportista' id='cuentaText' 
     size='6'  maxlength='5' value='$cod_satalbtte' tabindex='1'
- 	onkeyup='this.value=this.value.toUpperCase()'        
+ 	oninput='limpiarTexto(this)'        
     onBlur='muestra_cuenta(this.value)'
     ></td><td align=left width=5%><a href='javascript: cargarLista_cuenta();'>
     <img src=../../img/magnifier.png  height='16' class='middle'></a></td>";
@@ -222,7 +222,7 @@ switch ($accion) {
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'  
 	type='text' name='chofer' id='chofer_id'
 	size='40'  maxlength='35' value='$cond_satalbtte' tabindex='2'
- 	onkeyup='this.value=this.value.toUpperCase()'
+ 	oninput='limpiarTexto(this)'
   	></div></td>";
 
     echo "</tr>";
@@ -236,7 +236,7 @@ switch ($accion) {
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'
 	type='text' name='chofer_nif' id='chofer_nif_id'
   	size='15'  maxlength='15' value='$nif_satalbtte' tabindex='3'
-   	onkeyup='this.value=this.value.toUpperCase()'
+   	oninput='limpiarTexto(this)'
 	></div></td>";
 
     echo "</tr>";
@@ -250,7 +250,7 @@ switch ($accion) {
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'
 	type='text' name='matricula' id='matricula_id'
   	size='25'  maxlength='20' value='$mat_satalbtte' tabindex='4'
-   	onkeyup='this.value=this.value.toUpperCase()'
+   	oninput='limpiarTexto(this)'
 	></div><td>";
 
     echo "</tr>";
@@ -264,7 +264,7 @@ switch ($accion) {
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'
 	type='text' name='dest1' id='dest1'	
   	size='50'  maxlength='49' value='$dest1_satalbtte' tabindex='5'
-   	onkeyup='this.value=this.value.toUpperCase()'
+   	oninput='limpiarTexto(this)'
 	></div><td>";
 
     echo "</tr>";
@@ -278,7 +278,7 @@ switch ($accion) {
 	<input type=text style='border:1px solid black; background:#f6edc6;text-align:left; padding:3px'
 	type='text' name='dest2' id='dest2'		
   	size='50'  maxlength='49' value='$dest2_satalbtte' tabindex='6'
-   	onkeyup='this.value=this.value.toUpperCase()'
+   	oninput='limpiarTexto(this)'
 	></div></td>";
 
     if (!$pai_satalbtte) {
@@ -293,7 +293,7 @@ switch ($accion) {
     echo iconv("UTF-8", "ISO-8859-1", "><td class=firstcol align=left><div id=tit2>País destino</div></td>");
     echo "<td align=left width=10%><input STYLE='text-align:left' type='text' name='paisdestino' id='paisText' 
     size='6'  maxlength='5' value='$pai_satalbtte' tabindex='5'
- 	onkeyup='this.value=this.value.toUpperCase()'        
+ 	oninput='limpiarTexto(this)'        
     onBlur='muestra_pais(this.value)'
     ></td><td align=left width=5%><a href='javascript: cargarLista_pais();'>
     <img src=../../img/magnifier.png  height='16' class='middle'></a></td>";
@@ -348,6 +348,17 @@ switch ($accion) {
     echo "</tr></table>";
 
     ?><script>
+			// Mayusculas sin tildes ni enes, para que el PDF (ISO-8859-1) no muestre caracteres raros.
+			// Se usan escapes \u porque la pagina se sirve en ISO-8859-1.
+			function limpiarTexto(campo) {
+				campo.value = campo.value
+					.normalize('NFD')
+					.replace(/[̀-ͯ]/g, '')
+					.replace(/ñ/g, 'n')
+					.replace(/Ñ/g, 'N')
+					.toUpperCase();
+			}
+
 			// Borra los datos de transporte del albaran: vuelve a quedar sin transporte y genera CMR
 			function limpiarForm(form) {
 				if (!confirm('Se borraran los datos de transporte y volvera a generar CMR. Continuar?')) {
