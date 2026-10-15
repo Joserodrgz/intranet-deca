@@ -2,6 +2,7 @@
 set -euo pipefail # exit on error, unset variable or failed pipe
 shopt -s nullglob
 
+PATH="/usr/local/bin:${PATH}"
 
 SELF_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-${0}}")")" && pwd -P)"
 
