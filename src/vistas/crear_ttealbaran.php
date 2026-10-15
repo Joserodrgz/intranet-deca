@@ -136,11 +136,11 @@ function limpiarTexto(campo) {
     odbc_free_result ($quien);
 	if(!$dest1_satalbtte) $dest1_satalbtte = $ro_dir_cli;
 	if(!$dest2_satalbtte) $dest2_satalbtte = $ro_cpo_cli.' '.$ro_pob_cli;
-
+	if($enviar_hoy_vf == 'NO') $estado = 'P';
 	if ( ($estado == 'R') || ($estado == 'C') )
     echo"<fieldset><legend>Insertar cuadro de firma del transportista para
 	&nbsp; la factura $numero de $nom_cli</legend>";
-	if ($estado == 'A')
+	if ($estado == 'A'|| $estado == 'P')
     echo"<fieldset><legend>Insertar cuadro de firma del transportista para 
     &nbsp;el albar&aacute;n $numero de $nom_cli</legend>";
 

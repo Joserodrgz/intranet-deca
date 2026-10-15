@@ -262,25 +262,37 @@
     echo "<INPUT TYPE=hidden NAME=id_deca 			VALUE=$id_deca>";
 
 	$url_cto = sprintf ("../../fpdf/contrato_vies.php");	
-	
-	?><script>
+
+	?>
+	<iframe name="descarga_cmr" style="display:none;"></iframe>
+	<iframe name="descarga_cto" style="display:none;"></iframe>
+	<script>
 	function muestradata() {
 	checkSubmit();
-    document.forms['libro'].action='<?php echo $url_cmr;?>';
-	document.forms['libro'].target='_blank';
-    document.forms['libro'].submit();
+	var formulario = document.forms['libro'];	
+    formulario.action = <?php echo json_encode($url_cmr); ?>;
+    formulario.target = 'descarga_cmr';
+    formulario.submit();
+    <?php if (trim($pai_satalbtte) != 'ES') { ?>
 	window.setTimeout(function() {
-    paintTable();
-    }, 500);    
+    formulario.action = <?php echo json_encode($url_cto); ?>;
+    formulario.target = 'descarga_cto';
+    formulario.submit();
+    window.setTimeout(finalizar, 2000);		
+    }, 500);   
+    <?php } else { ?>
+	window.setTimeout(finalizar, 2000);
+    <?php } ?>
+    return false;
+	};
+	
+	function finalizar() {
+    if (window.opener && !window.opener.closed) {
+    window.opener.location.reload();
+    }	
+    window.close();
+    return true;
 	};	
-	function paintTable() {	
-    document.forms['libro'].action='<?php echo $url_cto;?>';
-	document.forms['libro'].target='_blank';
-	document.forms['libro'].submit();
-	self.close();	 
-	opener.location.reload();	
-    return true;		
-   	};  
 	</script><?php   
 
  	echo "<TABLE align=center width=50% id='Tabla_guardar'>";
