@@ -47,6 +47,10 @@ mkdir -p "${BUILD_DIR}"
 cp -a "${SRC_DIR}/." "${BUILD_DIR}/"
 cp ci/install.sh "${BUILD_DIR}/install.sh"
 
+# Config files go apart: install.sh only creates them if they do not exist on the server
+mkdir -p "${BUILD_DIR}/config"
+mv "${BUILD_DIR}/_configs/cloudflare_r2_deca.php" "${BUILD_DIR}/config/"
+
 ## generate version file
 
 ci/build-info.sh > "${BUILD_DIR}/release.json"
