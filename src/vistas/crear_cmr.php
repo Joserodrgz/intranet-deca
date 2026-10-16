@@ -217,6 +217,87 @@ if (($pai_satalbtte == 'ES') && ($en_destino != '')) {
   $url_cmr = sprintf("../../fpdf/deca.php");
 }
 
+// Documento ya generado de este albarán (solo lectura), para poder verlo sin regenerarlo.
+$tipo_doc = 'CMR';
+if ($url_cmr == '../../fpdf/deca.php') {
+  $tipo_doc = 'DECA';
+}
+$cod_doc = '';
+if (($estado == 'R') || ($estado == 'C')) {
+  $cod_doc = 'F';
+}
+if ($estado == 'A') {
+  $cod_doc = 'A';
+}
+$numero_doc = str_pad($numero, 6, '0', STR_PAD_LEFT);
+$url_originales = '/' . trim(str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/'), '', $originales), '/') . '/';
+$url_pdf_doc = '';
+$fecha_pdf_doc = '';
+
+if ($tipo_doc == 'DECA') {
+  $referencia_php = $aaaa . $cod_doc . $empr . $numero_doc;
+  $referencia_php_sin_ano = $cod_doc . $empr . $numero_doc;
+  $referencia_php_ano_actual = date('Y') . $cod_doc . $empr . $numero_doc;
+  $consulta_doc = "
+    SELECT
+      id_deca,
+      nombre_pdf,
+      fecha_creacion,
+      fecha_modif
+    FROM phpdeca
+    WHERE referencia_php IN ('$referencia_php', '$referencia_php_sin_ano', '$referencia_php_ano_actual')
+      AND estado = 'G'
+    ORDER BY id_deca DESC
+  ";
+  $res_doc = odbc_exec($conexion, $consulta_doc);
+
+  if (!$res_doc) {
+    $err = odbc_errormsg();
+    printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+  }
+
+  if ($res_doc && odbc_fetch_row($res_doc)) {
+    $nombre_pdf_doc = trim(odbc_result($res_doc, "nombre_pdf"));
+    $fecha_creacion_doc = trim(odbc_result($res_doc, "fecha_creacion"));
+    $fecha_modif_doc = trim(odbc_result($res_doc, "fecha_modif"));
+    $carpeta_doc = 'deca/' . substr($fecha_creacion_doc, 0, 4) . '/' . substr($fecha_creacion_doc, 5, 2) . '/';
+
+    if (is_file($originales . $carpeta_doc . $nombre_pdf_doc)) {
+      $url_pdf_doc = $url_originales . $carpeta_doc . $nombre_pdf_doc;
+      $fecha_pdf_doc = date('d/m/Y H:i', strtotime($fecha_modif_doc));
+    }
+  }
+
+  if ($res_doc) {
+    odbc_free_result($res_doc);
+  }
+} else {
+  $anos_doc = array_unique(array_filter(array($aaaa, date('Y'))));
+  $ficheros_cmr = array();
+  foreach ($anos_doc as $ano_doc) {
+    $ficheros_cmr[] = 'cmr/' . $ano_doc . '/' . $ano_doc . $cod_doc . $empr
+      . str_pad($numero, 7 - strlen($empr), '0', STR_PAD_LEFT) . '.pdf';
+    $ficheros_cmr[] = 'cmr/' . $ano_doc . $estado . $empr . $numero_doc . '.pdf';
+  }
+
+  foreach ($ficheros_cmr as $fichero_cmr) {
+    if (is_file($originales . $fichero_cmr)) {
+      $url_pdf_doc = $url_originales . $fichero_cmr;
+      $fecha_pdf_doc = date('d/m/Y H:i', filemtime($originales . $fichero_cmr));
+      break;
+    }
+  }
+}
+
+if ($url_pdf_doc != '') {
+  echo "<br><TABLE align=center width=95% class=gris>";
+  echo "<tr class=azul><td align=left><div id=tit2>
+	$tipo_doc generado el $fecha_pdf_doc &nbsp;&nbsp;
+	<A HREF=javascript:ventana('$url_pdf_doc','ventana','800','500','yes');>Ver PDF</A>
+	&nbsp;&nbsp;(para cambiarlo, modifica los datos y pulsa Enviar)";
+  echo "</div></td></tr></table>";
+}
+
 include("../js_tte.php");
 include("../js_paises.php");
 
@@ -379,27 +460,31 @@ echo "<INPUT TYPE=hidden NAME=id_deca VALUE='$id_deca'>";
 // $url_cto = sprintf("../../fpdf/sat_contrato_vies.php");
 
 ?>
+<iframe name="descarga_cmr" id="descarga_cmr" style="display:none;"></iframe>
 <script>
+	// El DECA/CMR se genera en un iframe oculto. Cuando termina, se recarga la ventana
+	// de opciones y se cierra esta, para no volver a enviar el mismo numero de DECA.
 	function muestradata() {
-		checkSubmit();
-		document.forms['libro'].action = '<?php echo $url_cmr; ?>';
-		document.forms['libro'].target = '_blank';
-		document.forms['libro'].submit();
-		// window.setTimeout(function() {
-		// 	paintTable();
-		// }, 500);
-	};
+		var formulario = document.forms['libro'];
+		var iframe = document.getElementById('descarga_cmr');
 
-	/*
-	function paintTable() {
-		document.forms['libro'].action = '<?php echo $url_cto; ?>';
-		document.forms['libro'].target = '_blank';
-		document.forms['libro'].submit();
-		self.close();
-		opener.location.reload();
-		return true;
-	};
-	*/
+		checkSubmit();
+		// Se asigna aqui para que no salte con la carga inicial (vacia) del iframe
+		iframe.onload = finalizar;
+		formulario.action = <?php echo json_encode($url_cmr); ?>;
+		formulario.target = 'descarga_cmr';
+		formulario.submit();
+		// Por si el navegador no avisa de que el iframe ha terminado de cargar
+		window.setTimeout(finalizar, 30000);
+		return false;
+	}
+
+	function finalizar() {
+		if (window.opener && !window.opener.closed) {
+			window.opener.location.reload();
+		}
+		window.close();
+	}
 </script>
 <?php
 
