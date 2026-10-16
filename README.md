@@ -91,6 +91,8 @@ El script `install.sh`:
     | `vistas`   | `/srv/www/htdocs/informix/vistas` |
     | `img`      | `/srv/www/htdocs/img`             |
 
+- Crea `_configs/cloudflare_r2_deca.php` con las claves vacías solo si no
+  existe, así que las actualizaciones conservan las claves del servidor
 - Restaura los permisos con `sharedir.sh` y `chown -R wwwrun:www`
 - Muestra la versión instalada
 

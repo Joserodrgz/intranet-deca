@@ -49,7 +49,7 @@ cp ci/install.sh "${BUILD_DIR}/install.sh"
 
 # Config files go apart: install.sh only creates them if they do not exist on the server
 mkdir -p "${BUILD_DIR}/config"
-mv "${BUILD_DIR}/_configs/cloudflare_r2_deca.php" "${BUILD_DIR}/config/"
+cp config/cloudflare_r2_deca.php "${BUILD_DIR}/config/"
 
 ## generate version file
 
