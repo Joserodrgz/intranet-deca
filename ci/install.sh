@@ -62,6 +62,14 @@ for map in "${MAPPINGS[@]}"; do
   echo "Copied ${src} -> ${HTDOCS}/${dst}"
 done
 
+# Config files: created only if they do not exist, so updates keep the server values
+R2_CONFIG_FILE="${HTDOCS}/_configs/cloudflare_r2_deca.php"
+
+if [[ ! -f "${R2_CONFIG_FILE}" ]]; then
+  echo "Creating R2 config file (fill in the R2 keys)..."
+  cp -a "${SELF_DIR}/config/cloudflare_r2_deca.php" "${R2_CONFIG_FILE}"
+fi
+
 cd "$(dirname "${HTDOCS}")"
 sharedir.sh "$(basename "${HTDOCS}")"
 chown -R wwwrun:www "$(basename "${HTDOCS}")"
