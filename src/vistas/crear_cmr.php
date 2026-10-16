@@ -275,8 +275,10 @@ if ($tipo_doc == 'DECA') {
   $anos_doc = array_unique(array_filter(array($aaaa, date('Y'))));
   $ficheros_cmr = array();
   foreach ($anos_doc as $ano_doc) {
-    $ficheros_cmr[] = 'cmr/' . $ano_doc . '/' . $ano_doc . $cod_doc . $empr
-      . str_pad($numero, 7 - strlen($empr), '0', STR_PAD_LEFT) . '.pdf';
+    if ($cod_doc != '') {
+      $ficheros_cmr[] = 'cmr/' . $ano_doc . '/' . $ano_doc . $cod_doc . $empr
+        . str_pad($numero, 7 - strlen($empr), '0', STR_PAD_LEFT) . '.pdf';
+    }
     $ficheros_cmr[] = 'cmr/' . $ano_doc . $estado . $empr . $numero_doc . '.pdf';
   }
 
