@@ -64,9 +64,11 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
 
     El paquete queda en `dist/intranet-deca-v<versión>.tgz`.
 
-2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`:
+2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`. Borra
+   antes `/tmp/deca` para no instalar ficheros de una versión anterior:
 
     ```sh
+    rm -rf /tmp/deca
     tar -xzf intranet-deca-v<versión>.tgz -C /tmp
     ```
 

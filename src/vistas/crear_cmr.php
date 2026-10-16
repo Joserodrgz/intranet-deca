@@ -460,30 +460,14 @@ echo "<INPUT TYPE=hidden NAME=id_deca VALUE='$id_deca'>";
 // $url_cto = sprintf("../../fpdf/sat_contrato_vies.php");
 
 ?>
-<iframe name="descarga_cmr" id="descarga_cmr" style="display:none;"></iframe>
 <script>
-	// El DECA/CMR se genera en un iframe oculto. Cuando termina, se recarga la ventana
-	// de opciones y se cierra esta, para no volver a enviar el mismo numero de DECA.
 	function muestradata() {
 		var formulario = document.forms['libro'];
-		var iframe = document.getElementById('descarga_cmr');
 
 		checkSubmit();
-		// Se asigna aqui para que no salte con la carga inicial (vacia) del iframe
-		iframe.onload = finalizar;
 		formulario.action = <?php echo json_encode($url_cmr); ?>;
-		formulario.target = 'descarga_cmr';
 		formulario.submit();
-		// Por si el navegador no avisa de que el iframe ha terminado de cargar
-		window.setTimeout(finalizar, 30000);
 		return false;
-	}
-
-	function finalizar() {
-		if (window.opener && !window.opener.closed) {
-			window.opener.location.reload();
-		}
-		window.close();
 	}
 </script>
 <?php
