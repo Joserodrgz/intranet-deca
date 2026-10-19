@@ -1,28 +1,17 @@
 # Intranet-Deca
 
-## Contexto
+The DECA (Documento Electrónico de Control Administrativo) is the digital
+document that proves road freight transport. It is shown as a QR code so
+inspectors can check the shipper, carrier, origin, destination, goods and
+plate. It is mandatory for domestic transport and cabotage in Spain.
 
-El Documento Electrónico de Control Administrativo (DECA) es la versión
-digital del documento que acredita el transporte público de mercancías por
-carretera.
+## Requirements
 
-Se presenta mediante un `QR` para que la inspección pueda verificar los datos
-del servicio: cargador, transportista, origen, destino, mercancía y matrícula.
-Es obligatorio para el transporte interior y el cabotaje en España.
+- PHP GD extension to generate the QR image: install `php5-gd` with YaST
 
-## Requisitos previos
+## Installation
 
-### Extensión GD de PHP
-
-Necesaria para generar la imagen del QR. Instala con YaST el paquete:
-
-```text
-php5-gd
-```
-
-## Instalación
-
-1. Clona el repositorio y genera el paquete desde `main`:
+1. Build the package from `main`:
 
     ```sh
     git clone https://github.com/Joserodrgz/intranet-deca.git
@@ -31,142 +20,86 @@ php5-gd
     npm run build
     ```
 
-    El paquete queda en `dist/intranet-deca-v<versión>.tgz`.
+    The package is written to `dist/intranet-deca-v<version>.tgz`.
 
-2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`. Borra
-   antes `/tmp/intranet-deca` para no instalar ficheros de una versión anterior:
+2. Copy it to the server and extract it in `/tmp`, removing any previous
+   version first:
 
     ```sh
+    cd tmp
     rm -rf /tmp/intranet-deca
-    tar -xzf intranet-deca-v<versión>.tgz -C /tmp
+    tar xzf intranet-deca-v<version>.tgz 
     ```
 
-3. Ejecuta el script de instalación con `sudo`:
+3. Run the installer:
 
     ```sh
     sudo /tmp/intranet-deca/install.sh
     ```
 
-El script `install.sh`:
+`install.sh` backs up `htdocs` with `tarhtdocs.sh`, copies each package folder
+to its destination and restores permissions with `sharedir.sh` and
+`chown -R wwwrun:www`:
 
-- Comprueba que se ejecuta como root y que existen `/srv/www/htdocs`,
-  `release.json`, `sharedir.sh` y `tarhtdocs.sh`
-- Hace una copia de seguridad de `htdocs` con `tarhtdocs.sh`
-- Copia cada carpeta del paquete a su destino:
+| Package    | Destination                       |
+| ---------- | --------------------------------- |
+| `_configs` | `/srv/www/htdocs/_configs`        |
+| `fpdf`     | `/srv/www/htdocs/fpdf`            |
+| `informix` | `/srv/www/htdocs/informix`        |
+| `vistas`   | `/srv/www/htdocs/informix/vistas` |
+| `img`      | `/srv/www/htdocs/img`             |
 
-    | Paquete    | Destino                           |
-    | ---------- | --------------------------------- |
-    | `_configs` | `/srv/www/htdocs/_configs`        |
-    | `fpdf`     | `/srv/www/htdocs/fpdf`            |
-    | `informix` | `/srv/www/htdocs/informix`        |
-    | `vistas`   | `/srv/www/htdocs/informix/vistas` |
-    | `img`      | `/srv/www/htdocs/img`             |
+It creates `_configs/cloudflare_r2_deca.php` with empty keys only if it does
+not exist, so updates keep the server keys. Fill in the keys on the first
+install: they are in Notion, under **Intranet > Intranet Deca**.
 
-- Crea `_configs/cloudflare_r2_deca.php` con las claves vacías solo si no
-  existe, así que las actualizaciones conservan las claves del servidor
-- Restaura los permisos con `sharedir.sh` y `chown -R wwwrun:www`
-- Muestra la versión instalada
+**Note:** the package replaces `vistas/opciones_albaran.php`. Review any
+client changes to that file before installing.
 
-**Nota:** el paquete incluye `vistas/opciones_albaran.php`, que sustituye al
-del cliente. Si el cliente tiene cambios propios en ese fichero, revísalos
-antes de instalar.
-
-**Nota:** para instalar en otra ruta, indícala con la variable `HTDOCS`:
+To install in another path, set `HTDOCS`:
 
 ```sh
-sudo HTDOCS=/ruta/htdocs /tmp/intranet-deca/install.sh
+sudo HTDOCS=/path/to/htdocs /tmp/intranet-deca/install.sh
 ```
 
-## Integración en la intranet
+## Intranet integration
 
-### Envases en el DECA
+### Packaging column in the DECA
 
-`fpdf/deca.php` rellena la columna Envase llamando a `envase()` con el código
-de envase de cada línea. La función es opcional:
+`fpdf/deca.php` fills the Envase column by calling `envase()` from the
+client's `_configs/consultas.php`. If the client has no `envase()`,
+`_configs/consultas_deca.php` defines a fallback, guarded by
+`function_exists()`, that returns an empty string and leaves the column blank.
 
-| Cliente                                         | Resultado                            |
-| ----------------------------------------------- | ------------------------------------ |
-| Tiene `envase()` en su `_configs/consultas.php` | Se muestra la descripción del envase |
-| No tiene `envase()`                             | La columna queda en blanco           |
+To show packaging for a client without `envase()`, copy the function from
+[snippets/consultas.php](snippets/consultas.php) into their
+`_configs/consultas.php`, without the opening `<?php` tag.
 
-`fpdf/deca.php` incluye primero `_configs/consultas.php` y después
-`_configs/consultas_deca.php`. Este último define una `envase()` que devuelve
-una cadena vacía, pero solo si el cliente no tiene la suya:
+### CMR column in albaranes_dia.php
 
-```php
-if (!function_exists('envase')) {
-  // Cliente sin envases: la columna "Envase" del DECA queda en blanco
-  function envase($codigo)
-  {
-    return '';
-  }
-}
-```
+`informix/albaranes_dia.php` is not in the package: edit it by hand on each
+client. Inside the `while (odbc_fetch_row($result))` loop, replace the CMR
+cell with [snippets/albaranes_dia.php](snippets/albaranes_dia.php). It shows
+`DeCA.png` for Spanish clients (`pai_cli = 'ES'`) and `CMR.png` for the rest.
 
-Si el cliente ya tiene `envase()`, el `function_exists()` evita el error de
-función duplicada y se usa la del cliente.
-
-Para mostrar los envases en un cliente sin `envase()`, copia la función de
-[snippets/consultas.php](snippets/consultas.php) en su
-`_configs/consultas.php`, sin la etiqueta `<?php` del principio:
+Also remove the condition that wraps the cell, since it is always true:
 
 ```php
-function envase($cod_env)
-{
-  if (is_file($_SERVER['DOCUMENT_ROOT'] . '/_configs/_config.php')) {
-    include($_SERVER['DOCUMENT_ROOT'] . '/_configs/_config.php');
-  }
-  if (is_file('../_configs/_config.php')) {
-    include('../_configs/_config.php');
-  }
-
-  $envase = "
-    SELECT des_env
-    FROM ffenvase
-    WHERE cod_env = '$cod_env'
-  ";
-  $res_env = odbc_exec($conexion, $envase);
-  $des_env = limpiar(odbc_result($res_env, "des_env"));
-  odbc_free_result($res_env);
-
-  return $des_env;
-}
-```
-
-### Columna CMR en albaranes_dia.php
-
-`informix/albaranes_dia.php` no va en el paquete: se modifica a mano en cada
-cliente. La columna CMR muestra `DeCA.png` en los albaranes de clientes de
-España (`pai_cli = 'ES'`) y `CMR.png` en el resto. La cabecera de la columna
-sigue siendo `Cmr`.
-
-Dentro del bucle `while (odbc_fetch_row($result))`, sustituye la celda CMR
-por el fragmento de [snippets/albaranes_dia.php](snippets/albaranes_dia.php).
-`$pai_cli` ya viene de la consulta principal del listado.
-
-Elimina también el condicional que envuelve la celda, porque siempre se
-cumple:
-
-```php
-// Eliminar
 if ($pai_cli <> 'ES' || $pai_cli == 'ES') {
-    // ...
-}
 ```
 
-## Comprobación
+## Testing
 
-1. Abre el listado de albaranes del día y verifica que aparece el icono CMR.
-2. Rellena los datos de transporte de un albarán con destino `ES`, marca
-   **Pagar transporte** y genera el DECA.
-3. Verifica que:
+1. Open the daily delivery notes list and check that the CMR icon appears.
+2. Fill in the transport data of a delivery note to `ES`, tick
+   **Pagar transporte** and generate the DECA. Check that:
 
-    - El PDF se muestra en el navegador con el QR.
-    - Al escanear el QR se abre el mismo PDF desde R2.
-    - La columna Envase muestra la descripción si el cliente tiene `envase()`,
-      o queda en blanco si no la tiene.
-    - En el listado y en las opciones del albarán aparece `DeCA.png`, y en las
-      opciones la cabecera de la columna es `DECA`.
+    - The PDF opens in the browser with the QR code.
+    - Scanning the QR code opens the same PDF from R2.
+    - The Envase column shows the packaging description, or is blank if the
+      client has no `envase()`.
+    - `DeCA.png` appears in the list and in the delivery note options, where
+      the column header is `DECA`.
 
-4. Vacía los datos de transporte del albarán y verifica que vuelve a aparecer
-   `CMR.png` y que **Enviar** en `crear_cmr.php` genera un CMR.
+3. Clear the transport data and check that `CMR.png` appears again and that
+   **Enviar** in `crear_cmr.php` generates a CMR.
