@@ -1,0 +1,28 @@
+name: Publish artifact
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          fetch-tags: true
+
+      - name: Build artifact
+        run: npm run build
+
+      - name: Upload artifact
+        run: |
+          curl \
+            --user "${{ secrets.FTP_USER }}:${{ secrets.FTP_PASS }}" \
+            --upload-file dist/*.tgz \
+            "ftp://${{ secrets.FTP_SERVER }}/"
