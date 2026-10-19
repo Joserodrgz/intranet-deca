@@ -9,33 +9,35 @@ plate. It is mandatory for domestic transport and cabotage in Spain.
 
 - PHP GD extension to generate the QR image: install `php5-gd` with YaST
 
-## Installation
+## Release
 
-1. Build the package from `main`:
+From the `develop` branch:
 
-    ```sh
-    git clone https://github.com/Joserodrgz/intranet-deca.git
-    cd intranet-deca
-    git checkout main
-    npm run build
-    ```
+```sh
+npm run release <version>
+```
 
-    The package is written to `dist/intranet-deca-v<version>.tgz`.
+This creates the `release/v<version>` branch and the `v<version>` tag, merges
+them into `develop` and `main`, and pushes everything to `origin`.
 
-2. Copy it to the server and extract it in `/tmp`, removing any previous
-   version first:
+## Build
 
-    ```sh
-    cd tmp
-    rm -rf /tmp/intranet-deca
-    tar xzf intranet-deca-v<version>.tgz 
-    ```
+Generate the package from the `main` branch:
 
-3. Run the installer:
+```sh
+git checkout main
+npm run build
+```
 
-    ```sh
-    sudo /tmp/intranet-deca/install.sh
-    ```
+The package is written to `dist/intranet-deca-v<version>.tgz`.
+
+## Deployment
+
+Deploy the latest release with appman:
+
+```sh
+sudo appman install intranet-deca
+```
 
 `install.sh` backs up `htdocs` with `tarhtdocs.sh`, copies each package folder
 to its destination and restores permissions with `sharedir.sh` and
@@ -55,6 +57,25 @@ install: they are in Notion, under **Intranet > Intranet Deca**.
 
 **Note:** the package replaces `vistas/opciones_albaran.php`. Review any
 client changes to that file before installing.
+
+### Manual installation
+
+If appman is not available, copy the package to the server and run the
+installer by hand:
+
+1. Extract the package in `/tmp`, removing any previous version first:
+
+    ```sh
+    cd /tmp
+    rm -rf /tmp/intranet-deca
+    tar -xzf intranet-deca-v<version>.tgz
+    ```
+
+2. Run the installer:
+
+    ```sh
+    sudo intranet-deca/install.sh
+    ```
 
 To install in another path, set `HTDOCS`:
 
