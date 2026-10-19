@@ -77,12 +77,6 @@ installer by hand:
     sudo intranet-deca/install.sh
     ```
 
-To install in another path, set `HTDOCS`:
-
-```sh
-sudo HTDOCS=/path/to/htdocs /tmp/intranet-deca/install.sh
-```
-
 ## Intranet integration
 
 ### Packaging column in the DECA

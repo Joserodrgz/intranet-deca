@@ -6,12 +6,27 @@ PATH="/usr/local/bin:${PATH}"
 
 SELF_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]:-${0}}")")" && pwd -P)"
 
+source "${SELF_DIR}/install.lib.sh"
+
 HTDOCS="${HTDOCS:-/srv/www/htdocs}"
 
 if [[ ${EUID} -ne 0 ]]; then # '$EUID' is 0 when running as root
   echo "ERROR: This script must be run with sudo" >&2
   exit 1
 fi
+
+## install required packages
+
+REQUIRED_PACKAGES=(
+  php5-curl
+  php5-iconv
+  php5-json
+  php5-odbc
+  php5-mbstring
+  php5-gd
+)
+
+install-packages "${REQUIRED_PACKAGES[@]}"
 
 if [[ ! -d "${HTDOCS}" ]]; then # '-d' checks that the directory exists
   echo "ERROR: ${HTDOCS} does not exist" >&2
