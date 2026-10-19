@@ -75,7 +75,7 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
 3. Ejecuta el script de instalación con `sudo`:
 
     ```sh
-    sudo bash /tmp/deca/install.sh
+    sudo /tmp/deca/install.sh
     ```
 
 El script `install.sh`:
@@ -105,7 +105,7 @@ antes de instalar.
 **Nota:** para instalar en otra ruta, indícala con la variable `HTDOCS`:
 
 ```sh
-sudo HTDOCS=/ruta/htdocs bash /tmp/deca/install.sh
+sudo HTDOCS=/ruta/htdocs /tmp/deca/install.sh
 ```
 
 ## Integración en la intranet
