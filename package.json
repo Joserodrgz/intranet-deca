@@ -9,5 +9,5 @@
     "release": "bash ci/release.sh",
     "build": "bash ci/build.sh"
   },
-  "version": "0.5.7"
+  "version": "0.6.0"
 }
