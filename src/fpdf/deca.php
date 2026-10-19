@@ -23,6 +23,9 @@ global $PHP_SELF, $numero, $estado, $cliente, $en_destino, $transportista, $ejer
   $fecha, $instr_5, $instr_16, $instr_18, $chofer, $chofer_nif, $referencia_deca, $id_deca,
   $matricula, $empr, $dest1, $dest2, $paisdestino, $nombre_pdf_deca, $ruta_pdf_deca;
 
+// crear_cmr.php envía el código de cliente codificado con rawurlencode()
+$cliente = rawurldecode($cliente);
+
 $hoy = $_SESSION["fechadetrabajo"];
 
 if (trim($fecha != '')) {
@@ -189,7 +192,7 @@ $pdf->marco_deca_3();
 
 // Dirección de destino
 $paisdestino = $paises[$paisdestino];
-$paisdestino = utf8_encode($paisdestino);
+$paisdestino = iconv('UTF-8', 'ISO-8859-1', $paisdestino);
 
 if (!$dest1) {
   $dest1 = $ro_dir_cli;

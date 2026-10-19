@@ -31,31 +31,51 @@ php5-gd
     npm run build
     ```
 
-    El build deja el paquete en `dist/intranet-deca-v<versión>.tgz`.
+    El paquete queda en `dist/intranet-deca-v<versión>.tgz`.
 
-2. Copia el paquete al servidor del cliente, en `/tmp`, y descomprímelo:
-
-    ```sh
-    cd /tmp
-    tar -xzf intranet-deca-v<versión>.tgz
-    ```
-
-3. Copia cada carpeta a su destino:
+2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`. Borra
+   antes `/tmp/intranet-deca` para no instalar ficheros de una versión anterior:
 
     ```sh
-    sudo cp /tmp/deca/_configs/* /srv/www/htdocs/_configs
-    sudo cp /tmp/deca/fpdf/*     /srv/www/htdocs/fpdf
-    sudo cp /tmp/deca/informix/* /srv/www/htdocs/informix
-    sudo cp /tmp/deca/vistas/*   /srv/www/htdocs/informix/vistas
+    rm -rf /tmp/intranet-deca
+    tar -xzf intranet-deca-v<versión>.tgz -C /tmp
     ```
 
-4. Vuelve a dar permisos a `/srv/www/htdocs`:
+3. Ejecuta el script de instalación con `sudo`:
 
     ```sh
-    cd /srv/www
-    sudo sharedir.sh htdocs
-    sudo chown -R wwwrun:www htdocs
+    sudo /tmp/intranet-deca/install.sh
     ```
+
+El script `install.sh`:
+
+- Comprueba que se ejecuta como root y que existen `/srv/www/htdocs`,
+  `release.json`, `sharedir.sh` y `tarhtdocs.sh`
+- Hace una copia de seguridad de `htdocs` con `tarhtdocs.sh`
+- Copia cada carpeta del paquete a su destino:
+
+    | Paquete    | Destino                           |
+    | ---------- | --------------------------------- |
+    | `_configs` | `/srv/www/htdocs/_configs`        |
+    | `fpdf`     | `/srv/www/htdocs/fpdf`            |
+    | `informix` | `/srv/www/htdocs/informix`        |
+    | `vistas`   | `/srv/www/htdocs/informix/vistas` |
+    | `img`      | `/srv/www/htdocs/img`             |
+
+- Crea `_configs/cloudflare_r2_deca.php` con las claves vacías solo si no
+  existe, así que las actualizaciones conservan las claves del servidor
+- Restaura los permisos con `sharedir.sh` y `chown -R wwwrun:www`
+- Muestra la versión instalada
+
+**Nota:** el paquete incluye `vistas/opciones_albaran.php`, que sustituye al
+del cliente. Si el cliente tiene cambios propios en ese fichero, revísalos
+antes de instalar.
+
+**Nota:** para instalar en otra ruta, indícala con la variable `HTDOCS`:
+
+```sh
+sudo HTDOCS=/ruta/htdocs /tmp/intranet-deca/install.sh
+```
 
 ## Integración en la intranet
 
@@ -115,11 +135,17 @@ function envase($cod_env)
 
 ### Columna CMR en albaranes_dia.php
 
-En `vistas/albaranes_dia.php`, la columna CMR va al final de cada fila, dentro
-del bucle `while (odbc_fetch_row($result))`.
+`informix/albaranes_dia.php` no va en el paquete: se modifica a mano en cada
+cliente. La columna CMR muestra `DeCA.png` en los albaranes de clientes de
+España (`pai_cli = 'ES'`) y `CMR.png` en el resto. La cabecera de la columna
+sigue siendo `Cmr`.
 
-Elimina el condicional que la envuelve. Siempre se cumple, porque el país es
-`ES` o no lo es:
+Dentro del bucle `while (odbc_fetch_row($result))`, sustituye la celda CMR
+por el fragmento de [snippets/albaranes_dia.php](snippets/albaranes_dia.php).
+`$pai_cli` ya viene de la consulta principal del listado.
+
+Elimina también el condicional que envuelve la celda, porque siempre se
+cumple:
 
 ```php
 // Eliminar
@@ -128,36 +154,19 @@ if ($pai_cli <> 'ES' || $pai_cli == 'ES') {
 }
 ```
 
-Deja la celda sin condición:
-
-```php
-    // Cliente sin FacturaE -> celda vacía
-    if ($es_facturae == 'NO') {
-        echo "<td align=center><div id=tit3>&nbsp;</div></td>";
-    }
-}
-
-// Columna CMR: se muestra para todos los países
-echo "<td align=center>
-    <div id=tit3>
-        <a href=$url_opciones target=_blank>
-            <img src=../img/CMR.png border=0 height='16'>
-        </a>
-    </div>
-</td>";
-
-echo "</tr>";
-$a++;
-} // fin while (odbc_fetch_row($result))
-```
-
 ## Comprobación
 
 1. Abre el listado de albaranes del día y verifica que aparece el icono CMR.
-2. Rellena los datos de transporte de un albarán y genera el DECA.
+2. Rellena los datos de transporte de un albarán con destino `ES`, marca
+   **Pagar transporte** y genera el DECA.
 3. Verifica que:
 
     - El PDF se muestra en el navegador con el QR.
     - Al escanear el QR se abre el mismo PDF desde R2.
     - La columna Envase muestra la descripción si el cliente tiene `envase()`,
       o queda en blanco si no la tiene.
+    - En el listado y en las opciones del albarán aparece `DeCA.png`, y en las
+      opciones la cabecera de la columna es `DECA`.
+
+4. Vacía los datos de transporte del albarán y verifica que vuelve a aparecer
+   `CMR.png` y que **Enviar** en `crear_cmr.php` genera un CMR.

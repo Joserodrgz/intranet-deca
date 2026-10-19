@@ -8,7 +8,7 @@ include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/colores.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/funciones.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_configs/consultas.php');
 include_once($_SERVER['DOCUMENT_ROOT'] . '/_clases/phpsecureurl.php');
-$codep = new phpsecureurl;
+$codep = new phpsecureurl();
 
 if ($_REQUEST['hmg']) {
   $url12 = $codep->decode($url12);
@@ -16,12 +16,35 @@ if ($_REQUEST['hmg']) {
 
 global $PHP_SELF, $numero, $estado, $cliente, $empr;
 
+// El código de cliente puede llevar espacios o caracteres especiales
+$cliente = rawurldecode($cliente);
+
 echo "<body onload='document.forms.libro.transportista.focus()'>";
 
 $nom_cli = cliente($cliente);
 $hoy = $_SESSION["fechadetrabajo"];
 $aaaa = select_ano_($hoy);
 $ejercicio_deca = (int) date('Y');
+
+// CIF de la empresa: forma parte de la referencia del DECA para que el PDF sea
+// único en R2 aunque varios clientes compartan el mismo bucket
+$datos_empr = "
+  SELECT cif_emp
+  FROM ffempres
+  WHERE cod_emp = '$empr'
+";
+$res_empr = odbc_exec($conexion, $datos_empr);
+
+if (!$res_empr) {
+  $err = odbc_errormsg();
+  printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+}
+
+$cif_emp = trim(odbc_result($res_empr, "cif_emp"));
+// Solo letras y números: un espacio o un guion (p. ej. "ES B-60282423") romperían
+// la referencia, que es también el nombre del PDF en R2
+$cif_emp = preg_replace('/[^A-Z0-9]/', '', strtoupper($cif_emp));
+odbc_free_result($res_empr);
 
 //////////////////////////
 
@@ -46,7 +69,7 @@ if ($row && $row['ultimo_numero'] !== null) {
 
 odbc_free_result($rs);
 
-$referencia_deca = 'DECA-' . $ejercicio_deca . '-' . str_pad($numero_deca, 6, '0', STR_PAD_LEFT);
+$referencia_deca = 'DECA-' . $cif_emp . '-' . $ejercicio_deca . '-' . str_pad($numero_deca, 6, '0', STR_PAD_LEFT);
 $token_deca = bin2hex(openssl_random_pseudo_bytes(32));
 $fecha_creacion_deca = date('Y-m-d H:i:s');
 $referencia_deca_sql = str_replace("'", "''", $referencia_deca);
@@ -179,7 +202,7 @@ $a = 1;
 
 if (($estado == 'R') || ($estado == 'C')) {
   echo iconv("UTF-8", "ISO-8859-1", "<fieldset><legend>Crear &nbsp; <img src=../../img/CMR.png width='24' height='16' class='middle'> 
-    &nbsp;de la factura $numero del almacén $empr de ") . $nom_cli . " &nbsp;&nbsp;</legend>";	
+    &nbsp;de la factura $numero del almacén $empr de ") . $nom_cli . " &nbsp;&nbsp;</legend>";
 }
 
 if ($estado == 'A') {
@@ -189,8 +212,92 @@ if ($estado == 'A') {
 
 $url_cmr = sprintf("../../fpdf/cmr.php");
 
-if ($pai_satalbtte == 'ES') {
+// DECA solo si el destino es España y se ha indicado quién paga el transporte
+if (($pai_satalbtte == 'ES') && ($en_destino != '')) {
   $url_cmr = sprintf("../../fpdf/deca.php");
+}
+
+// Documento ya generado de este albarán (solo lectura), para poder verlo sin regenerarlo.
+$tipo_doc = 'CMR';
+if ($url_cmr == '../../fpdf/deca.php') {
+  $tipo_doc = 'DECA';
+}
+$cod_doc = '';
+if (($estado == 'R') || ($estado == 'C')) {
+  $cod_doc = 'F';
+}
+if ($estado == 'A') {
+  $cod_doc = 'A';
+}
+$numero_doc = str_pad($numero, 6, '0', STR_PAD_LEFT);
+$url_originales = '/' . trim(str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/'), '', $originales), '/') . '/';
+$url_pdf_doc = '';
+$fecha_pdf_doc = '';
+
+if ($tipo_doc == 'DECA') {
+  $referencia_php = $aaaa . $cod_doc . $empr . $numero_doc;
+  $referencia_php_sin_ano = $cod_doc . $empr . $numero_doc;
+  $referencia_php_ano_actual = date('Y') . $cod_doc . $empr . $numero_doc;
+  $consulta_doc = "
+    SELECT
+      id_deca,
+      nombre_pdf,
+      fecha_creacion,
+      fecha_modif
+    FROM phpdeca
+    WHERE referencia_php IN ('$referencia_php', '$referencia_php_sin_ano', '$referencia_php_ano_actual')
+      AND estado = 'G'
+    ORDER BY id_deca DESC
+  ";
+  $res_doc = odbc_exec($conexion, $consulta_doc);
+
+  if (!$res_doc) {
+    $err = odbc_errormsg();
+    printf('Error en ' . __FILE__ . ' linea ' . __LINE__ . ', motivo --->    %s ', $err);
+  }
+
+  if ($res_doc && odbc_fetch_row($res_doc)) {
+    $nombre_pdf_doc = trim(odbc_result($res_doc, "nombre_pdf"));
+    $fecha_creacion_doc = trim(odbc_result($res_doc, "fecha_creacion"));
+    $fecha_modif_doc = trim(odbc_result($res_doc, "fecha_modif"));
+    $carpeta_doc = 'deca/' . substr($fecha_creacion_doc, 0, 4) . '/' . substr($fecha_creacion_doc, 5, 2) . '/';
+
+    if (is_file($originales . $carpeta_doc . $nombre_pdf_doc)) {
+      $url_pdf_doc = $url_originales . $carpeta_doc . $nombre_pdf_doc;
+      $fecha_pdf_doc = date('d/m/Y H:i', strtotime($fecha_modif_doc));
+    }
+  }
+
+  if ($res_doc) {
+    odbc_free_result($res_doc);
+  }
+} else {
+  $anos_doc = array_unique(array_filter(array($aaaa, date('Y'))));
+  $ficheros_cmr = array();
+  foreach ($anos_doc as $ano_doc) {
+    if ($cod_doc != '') {
+      $ficheros_cmr[] = 'cmr/' . $ano_doc . '/' . $ano_doc . $cod_doc . $empr
+        . str_pad($numero, 7 - strlen($empr), '0', STR_PAD_LEFT) . '.pdf';
+    }
+    $ficheros_cmr[] = 'cmr/' . $ano_doc . $estado . $empr . $numero_doc . '.pdf';
+  }
+
+  foreach ($ficheros_cmr as $fichero_cmr) {
+    if (is_file($originales . $fichero_cmr)) {
+      $url_pdf_doc = $url_originales . $fichero_cmr;
+      $fecha_pdf_doc = date('d/m/Y H:i', filemtime($originales . $fichero_cmr));
+      break;
+    }
+  }
+}
+
+if ($url_pdf_doc != '') {
+  echo "<br><TABLE align=center width=95% class=gris>";
+  echo "<tr class=azul><td align=left><div id=tit2>
+	$tipo_doc generado el $fecha_pdf_doc &nbsp;&nbsp;
+	<A HREF=javascript:ventana('$url_pdf_doc','ventana','800','500','yes');>Ver PDF</A>
+	&nbsp;&nbsp;(para cambiarlo, modifica los datos y pulsa Enviar)";
+  echo "</div></td></tr></table>";
 }
 
 include("../js_tte.php");
@@ -338,43 +445,32 @@ echo "<td align=left width=50>
 echo "</tr></table>";
 
 // Campos ocultos
-echo "<INPUT TYPE=hidden NAME=numero VALUE=$numero>";
-echo "<INPUT TYPE=hidden NAME=estado VALUE=$estado>";
-echo "<INPUT TYPE=hidden NAME=cliente VALUE=$cliente>";
-echo "<INPUT TYPE=hidden NAME=empr VALUE=$empr>";
-echo "<INPUT TYPE=hidden NAME=aaaa VALUE=$aaaa>";
-echo "<INPUT TYPE=hidden NAME=pai_cli VALUE=$pai_satalbtte>";
-echo "<INPUT TYPE=hidden NAME=en_destino VALUE=$en_destino>";
-echo "<INPUT TYPE=hidden NAME=nombre_pdf_deca VALUE=$nombre_pdf_deca>";
-echo "<INPUT TYPE=hidden NAME=ruta_pdf_deca VALUE=$ruta_pdf_deca>";
-echo "<INPUT TYPE=hidden NAME=ejercicio_deca VALUE=$ejercicio_deca>";
-echo "<INPUT TYPE=hidden NAME=referencia_deca VALUE=$referencia_deca>";
-echo "<INPUT TYPE=hidden NAME=id_deca VALUE=$id_deca>";
+echo "<INPUT TYPE=hidden NAME=numero VALUE='$numero'>";
+echo "<INPUT TYPE=hidden NAME=estado VALUE='$estado'>";
+$cliente_url = rawurlencode($cliente);
+echo "<INPUT TYPE=hidden NAME=cliente VALUE='$cliente_url'>";
+echo "<INPUT TYPE=hidden NAME=empr VALUE='$empr'>";
+echo "<INPUT TYPE=hidden NAME=aaaa VALUE='$aaaa'>";
+echo "<INPUT TYPE=hidden NAME=pai_cli VALUE='$pai_satalbtte'>";
+echo "<INPUT TYPE=hidden NAME=en_destino VALUE='$en_destino'>";
+echo "<INPUT TYPE=hidden NAME=nombre_pdf_deca VALUE='$nombre_pdf_deca'>";
+echo "<INPUT TYPE=hidden NAME=ruta_pdf_deca VALUE='$ruta_pdf_deca'>";
+echo "<INPUT TYPE=hidden NAME=ejercicio_deca VALUE='$ejercicio_deca'>";
+echo "<INPUT TYPE=hidden NAME=referencia_deca VALUE='$referencia_deca'>";
+echo "<INPUT TYPE=hidden NAME=id_deca VALUE='$id_deca'>";
 
 // $url_cto = sprintf("../../fpdf/sat_contrato_vies.php");
 
 ?>
 <script>
 	function muestradata() {
-		checkSubmit();
-		document.forms['libro'].action = '<?php echo $url_cmr; ?>';
-		document.forms['libro'].target = '_blank';
-		document.forms['libro'].submit();
-		// window.setTimeout(function() {
-		// 	paintTable();
-		// }, 500);
-	};
+		var formulario = document.forms['libro'];
 
-	/*
-	function paintTable() {
-		document.forms['libro'].action = '<?php echo $url_cto; ?>';
-		document.forms['libro'].target = '_blank';
-		document.forms['libro'].submit();
-		self.close();
-		opener.location.reload();
-		return true;
-	};
-	*/
+		checkSubmit();
+		formulario.action = <?php echo json_encode($url_cmr); ?>;
+		formulario.submit();
+		return false;
+	}
 </script>
 <?php
 

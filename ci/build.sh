@@ -14,7 +14,6 @@ BASE_BRANCH="main"
 
 SRC_DIR="src"
 DIST_DIR="dist"
-BUILD_DIR="${DIST_DIR}/deca"
 
 # ----
 # init
@@ -33,6 +32,9 @@ check-build-requirements "${BASE_BRANCH}"
 PRJ_NAME=$(ci/build-info.sh name)
 PRJ_VERSION=$(ci/build-info.sh version)
 
+# The package root folder must be named after the project: appman looks for <name>/install.sh
+BUILD_DIR="${DIST_DIR}/${PRJ_NAME}"
+
 ## cleanup previous build
 
 rm -rf "${DIST_DIR}"
@@ -45,6 +47,12 @@ mkdir -p "${BUILD_DIR}"
 ## copy runtime files
 
 cp -a "${SRC_DIR}/." "${BUILD_DIR}/"
+cp ci/install.sh "${BUILD_DIR}/install.sh"
+chmod +x "${BUILD_DIR}/install.sh"
+
+# Config files go apart: install.sh only creates them if they do not exist on the server
+mkdir -p "${BUILD_DIR}/config"
+cp config/cloudflare_r2_deca.php "${BUILD_DIR}/config/"
 
 ## generate version file
 
