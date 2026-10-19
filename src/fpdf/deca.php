@@ -228,10 +228,6 @@ if (!$res_serie) {
 $seriefactura = trim(odbc_result($res_serie, "serie"));
 odbc_free_result($res_serie);
 
-if ($seriefactura == '') {
-  $seriefactura = $empr;
-}
-
 $numero_fra = str_pad($numero, 6, '0', STR_PAD_LEFT);
 $numero_pdf = $seriefactura . '-' . $numero_fra;
 $pdf->addClientAdresse_9($numero_pdf);
