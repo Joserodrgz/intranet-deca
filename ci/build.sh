@@ -14,7 +14,6 @@ BASE_BRANCH="main"
 
 SRC_DIR="src"
 DIST_DIR="dist"
-BUILD_DIR="${DIST_DIR}/deca"
 
 # ----
 # init
@@ -32,6 +31,9 @@ check-build-requirements "${BASE_BRANCH}"
 
 PRJ_NAME=$(ci/build-info.sh name)
 PRJ_VERSION=$(ci/build-info.sh version)
+
+# The package root folder must be named after the project: appman looks for <name>/install.sh
+BUILD_DIR="${DIST_DIR}/${PRJ_NAME}"
 
 ## cleanup previous build
 

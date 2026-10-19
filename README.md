@@ -65,17 +65,17 @@ No requiere acción manual: `vistas/crear_ttealbaran.php` la crea, con sus
     El paquete queda en `dist/intranet-deca-v<versión>.tgz`.
 
 2. Copia el paquete al servidor del cliente y descomprímelo en `/tmp`. Borra
-   antes `/tmp/deca` para no instalar ficheros de una versión anterior:
+   antes `/tmp/intranet-deca` para no instalar ficheros de una versión anterior:
 
     ```sh
-    rm -rf /tmp/deca
+    rm -rf /tmp/intranet-deca
     tar -xzf intranet-deca-v<versión>.tgz -C /tmp
     ```
 
 3. Ejecuta el script de instalación con `sudo`:
 
     ```sh
-    sudo /tmp/deca/install.sh
+    sudo /tmp/intranet-deca/install.sh
     ```
 
 El script `install.sh`:
@@ -105,7 +105,7 @@ antes de instalar.
 **Nota:** para instalar en otra ruta, indícala con la variable `HTDOCS`:
 
 ```sh
-sudo HTDOCS=/ruta/htdocs /tmp/deca/install.sh
+sudo HTDOCS=/ruta/htdocs /tmp/intranet-deca/install.sh
 ```
 
 ## Integración en la intranet
